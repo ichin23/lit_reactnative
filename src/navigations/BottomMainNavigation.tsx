@@ -1,10 +1,12 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';6
 import { HomeScreen } from "../screens/Home";
 import { ExplorarScreen } from "../screens/Explorar";
 import { PerfilScreen } from "../screens/Perfil";
 import ColorTheme from "../styles/colors";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { HomeTypes } from "./MainStackNavigation";
 
 const Tab = createBottomTabNavigator({
     screens: {
@@ -15,8 +17,9 @@ const Tab = createBottomTabNavigator({
 });
 
 
-export function BottomMainNavigation() {
+export function BottomMainNavigation({navigation}: HomeTypes) {
     return (
+        <View style={{ flex: 1 }}>
         <Tab.Navigator screenOptions={{
             headerShown: false,
             tabBarActiveTintColor: ColorTheme.primary,
@@ -32,5 +35,25 @@ export function BottomMainNavigation() {
                 tabBarIcon: ({ color, focused })=>(<FontAwesome5 name="user" size={24} color={color} solid={focused} />)
             }}/>
         </Tab.Navigator>
+        <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('Add')}>
+            <MaterialIcons name="add" size={32} color="#fff" />
+        </TouchableOpacity>
+        </View>
     )
 }
+
+const styles = StyleSheet.create({
+  fab: {
+    position: "absolute",
+    right: 24,
+    bottom: 100,
+    backgroundColor: "#c00",
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 4,
+    zIndex: 100,
+  },
+});
