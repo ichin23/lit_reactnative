@@ -36,6 +36,20 @@ export const styles = StyleSheet.create({
         fontWeight: "bold",
         color: "#222",
     },
+    logoutButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: ColorTheme.primary,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+        marginTop: 8,
+    },
+    logoutText: {
+        color: "#fff",
+        fontSize: 16,
+        marginLeft: 8,
+    },
     places: {
         color: "#1976d2",
         fontSize: 16,

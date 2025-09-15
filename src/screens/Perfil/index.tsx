@@ -33,6 +33,10 @@ export function PerfilScreen() {
                 <View style={styles.avatar} />
                 <Text style={styles.name}>João Malagueta</Text>
                 <Text style={styles.places}>67 locais</Text>
+                <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+                    <MaterialIcons name="logout" size={20} color="#fff" />
+                    <Text style={styles.logoutText}>Sair</Text>
+                </TouchableOpacity>
             </View>
             <Text style={styles.historyTitle}>Histórico</Text>
             <FlatList
