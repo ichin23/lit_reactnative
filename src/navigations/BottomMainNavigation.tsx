@@ -7,6 +7,7 @@ import { PerfilScreen } from "../screens/Perfil";
 import ColorTheme from "../styles/colors";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { HomeTypes } from "./MainStackNavigation";
+import { CustomHeader } from "../components/Appbar";
 
 const Tab = createBottomTabNavigator({
     screens: {
@@ -21,7 +22,7 @@ export function BottomMainNavigation({navigation}: HomeTypes) {
     return (
         <View style={{ flex: 1 }}>
         <Tab.Navigator screenOptions={{
-            headerShown: false,
+            header: (props) => <CustomHeader {...props} navigation={navigation} />,
             tabBarActiveTintColor: ColorTheme.primary,
             tabBarInactiveTintColor: ColorTheme.textSecondary,
         }}>

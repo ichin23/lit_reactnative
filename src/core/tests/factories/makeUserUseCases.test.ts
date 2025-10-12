@@ -1,0 +1,15 @@
+
+import { makeUserUseCases } from "../../factories/makeUserUseCases";
+
+describe("makeUserUseCases", () => {
+  it("should return all user use cases", () => {
+    const useCases = makeUserUseCases();
+
+    expect(useCases.registerUser).toBeDefined();
+    expect(useCases.loginUser).toBeDefined();
+    expect(useCases.updateUser).toBeDefined();
+    expect(useCases.deleteUser).toBeDefined();
+    expect(useCases.findUserById).toBeDefined();
+    expect(useCases.findUserByEmail).toBeDefined();
+  });
+});

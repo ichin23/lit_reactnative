@@ -5,10 +5,11 @@ import { MainStackNavigation } from './MainStackNavigation';
 import { useAuth } from '../context/auth';
 
 export function Navigation(){
-    const {isAuthenticated} = useAuth();
+    const {user} = useAuth();
+    
     return (
         <NavigationContainer>
-            { isAuthenticated ? <MainStackNavigation /> : <LoginStackNavigations />}
+            { user ? <MainStackNavigation /> : <LoginStackNavigations />}
         </NavigationContainer>
     )
 }

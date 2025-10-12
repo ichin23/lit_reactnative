@@ -1,9 +1,15 @@
 import { createContext, ReactNode, useContext, useState } from "react";
+import { User } from "../core/domain/entities/User";
+import { makeUserUseCases } from "../core/factories/makeUserUseCases";
 
+const userUseCases = makeUserUseCases();
 export interface AuthContextData {
-    isAuthenticated: boolean;
-    login: (username: string, password: string) => Promise<void>;
+    user: User | null;
+    login: (email: string, pass: string) => Promise<void>;
+    register: (user: {name:string, email: string, password: string}) => Promise<void>;
     logout: () => void;
+    update: (user: {id:string, name:string, email:string}) => Promise<void>;
+    deleteUser: (userId:string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextData | undefined>(undefined);
@@ -13,20 +19,34 @@ export interface IProvider {
 }
 
 export const AuthProvider = ({ children }: IProvider) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
 
-    const login = async (username: string, password: string) => {
-        // Perform login logic here
-        setIsAuthenticated(true);
+    const login = async (email: string, password: string) => {
+        const user = await userUseCases.loginUser.execute({email, password})
+        setUser(user);
+    };
+
+    const register = async (user: {name:string, email: string, password: string}) => {
+        await userUseCases.registerUser.execute(user)
     };
 
     const logout = () => {
-        // Perform logout logic here
-        setIsAuthenticated(false);
+        userUseCases.logoutUser.execute({userId: user?.id!})
+        setUser(null);
     };
 
+    const update = async (user: {id:string, name:string, email:string})=>{
+        let newUser = await userUseCases.updateUser.execute(user);
+        setUser(newUser);
+    }
+
+    const deleteUser = async (userId:string)=>{
+        await userUseCases.deleteUser.execute({id: userId});
+        setUser(null);
+    }
+
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ user, login, register, logout, update, deleteUser }}>
             {children}
         </AuthContext.Provider>
     );

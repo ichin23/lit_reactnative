@@ -5,16 +5,25 @@ import ColorTheme from "../styles/colors";
 import { BottomMainNavigation } from "./BottomMainNavigation";
 import AddScreen from "../screens/Add";
 import { StaticParamList } from "@react-navigation/native";
+import { CameraScreen } from "../screens/Camera";
+import { EditProfileScreen } from "../screens/EditProfile";
 
+type MainStackParamList = {
+    MainStack: undefined,
+    Add: undefined,
+    Camera: { onPhotoTaken: (uri: string) => void } | undefined,
+    EditProfile: undefined
+};
 
-const MainStack = createNativeStackNavigator({
+const MainStack = createNativeStackNavigator<MainStackParamList>({
     screens: {
         MainStack: BottomMainNavigation,
-        Add: AddScreen
+        Add: AddScreen,
+        Camera: CameraScreen,
+        EditProfile: EditProfileScreen
     }
 });
 
-type MainStackParamList =  StaticParamList<typeof MainStack>;
 type HomeScreenProps = NativeStackNavigationProp<MainStackParamList, 'MainStack'>;
 
 export type HomeTypes = {
@@ -24,7 +33,7 @@ export type HomeTypes = {
 export function MainStackNavigation() {
     return (
         <MainStack.Navigator
-            screenOptions={{ header: (props) => <CustomHeader {...props} />, contentStyle: { backgroundColor: ColorTheme.background } }}>
+            screenOptions={{ headerShown: false, contentStyle: { backgroundColor: ColorTheme.background } }}>
             <MainStack.Screen
                 name="MainStack"
                 component={BottomMainNavigation}
@@ -33,6 +42,16 @@ export function MainStackNavigation() {
                 name="Add"
                 component={AddScreen}
                 options={{ headerShown: false, animation: 'slide_from_bottom' }}
+            />
+            <MainStack.Screen
+                name="Camera"
+                component={CameraScreen}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
+            />
+            <MainStack.Screen
+                name="EditProfile"
+                component={EditProfileScreen}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
             />
         </MainStack.Navigator>
     )
