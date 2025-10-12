@@ -28,7 +28,6 @@ export class CreatePost{
         );
 
         await this.postRepository.save(post);
-        console.log(await this.postRepository.getAll());
         return post;
     }
 

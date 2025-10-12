@@ -4,13 +4,16 @@ import { Navigation } from './src/navigations';
 import { AuthProvider } from './src/context/auth';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
+import { PostProvider } from './src/context/post';
 
 function App() {
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <AuthProvider>
-        <Navigation />
-        {      /*<Toast />*/}
+        <PostProvider>
+          <Navigation />
+        </PostProvider>
+        <Toast />
       </AuthProvider>
     </GestureHandlerRootView>
   );

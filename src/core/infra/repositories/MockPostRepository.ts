@@ -2,18 +2,18 @@ import { posts } from "../../../services/data";
 import { Post } from "../../domain/entities/Post";
 import { IPostRepository } from "../../domain/repositories/IPostRepository";
 
-export class MockPostRepository implements IPostRepository  {
+export class MockPostRepository implements IPostRepository {
   private static instance: MockPostRepository;
 
   private posts: Post[] = [];
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): MockPostRepository {
     if (!MockPostRepository.instance) {
       MockPostRepository.instance = new MockPostRepository();
     }
-    return MockPostRepository.instance;
+    return MockPostRepository.instance
   }
 
   async save(post: Post): Promise<void> {

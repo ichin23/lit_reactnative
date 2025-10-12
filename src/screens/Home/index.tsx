@@ -3,22 +3,21 @@ import { styles } from "./styles";
 import { FlatList, RefreshControl } from "react-native-gesture-handler";
 import { PostHomeCard } from "../../components/PostHomeCard";
 import { HomeTypes } from "../../navigations/MainStackNavigation";
-import { makePostUseCases } from "../../core/factories/makePostUseCases";
-import { useCallback, useEffect, useState } from "react";
-import { Post } from "../../core/domain/entities/Post";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { PostContext, usePost } from "../../context/post";
+import { useFocusEffect } from "@react-navigation/native";
 
-const { findPosts } = makePostUseCases();
 export function HomeScreen({ navigation }: HomeTypes) {
-    const [posts, setPosts] = useState<Post[]>([] as Post[]);
+    const { posts, fetchPosts } = usePost();
     const [refreshing, setRefreshing] = useState(false);
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-        findPosts.execute().then(setPosts).finally(() => setRefreshing(false));
+        fetchPosts().finally(() => setRefreshing(false));
     }, []);
 
     useEffect(() => {
-        findPosts.execute().then(setPosts);
+        fetchPosts();
     }, []);
     
     return <View style={styles.container}>

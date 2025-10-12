@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import ColorTheme from "../../styles/colors";
@@ -13,6 +13,7 @@ import { Post } from "../../core/domain/entities/Post";
 import { GeoCoordinates } from "../../core/domain/value-objects/GeoCoordinates";
 import Toast from "react-native-toast-message";
 import { useRoute } from "@react-navigation/native";
+import { PostContext } from "../../context/post";
 
 const { createPost } = makePostUseCases();
 
@@ -22,6 +23,7 @@ interface RouteParams {
 
 export default function AddScreen({ navigation }: HomeTypes) {
   const { user } = useAuth();
+  const { fetchPosts } = useContext(PostContext);
   const [title, setTitle] = useState("Forró do André");
   const [photo, setPhoto] = useState<string | null>(null);
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
@@ -65,6 +67,9 @@ export default function AddScreen({ navigation }: HomeTypes) {
         datetime: new Date().toString(),
         title: title
       });
+
+      await fetchPosts();
+      
       Toast.show({
         text1: "Post adicionado com sucesso!",
         position: "top",

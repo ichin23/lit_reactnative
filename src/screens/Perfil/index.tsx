@@ -2,28 +2,30 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList } from "react
 import { MaterialIcons } from "@expo/vector-icons";
 import { useAuth } from "../../context/auth";
 import { styles } from "./styles";
-import { makePostUseCases } from "../../core/factories/makePostUseCases";
-import { useEffect, useState } from "react";
-import { Post } from "../../core/domain/entities/Post";
+import { useContext, useMemo } from "react";
 import { HomeTypes } from "../../navigations/MainStackNavigation";
-
-const { findPostByUserId } = makePostUseCases();
+import { PostContext } from "../../context/post";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 export function PerfilScreen({ navigation }: HomeTypes) {
     const { logout, user } = useAuth();
-    const [posts, setPosts] = useState<Post[]>([] as Post[]);
+    const { posts, fetchPosts } = useContext(PostContext);
 
-    useEffect(() => {
-        findPostByUserId.execute({userId: user!.id}).then(setPosts);
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            fetchPosts();
+        }, [])
+    );
 
+    const userPosts = useMemo(() => posts.filter(post => post.userId === user!.id), [posts, user]);
 
     return (
         <View style={styles.container}>
             <View style={styles.avatarContainer}>
                 <View style={styles.avatar} />
                 <Text style={styles.name}>{user!.name.value}</Text>
-                <Text style={styles.places}>{posts.length} locais</Text>
+                <Text style={styles.places}>{userPosts.length} locais</Text>
                 <TouchableOpacity style={styles.logoutButton} onPress={() => navigation.navigate('EditProfile')}>
                     <MaterialIcons name="edit" size={20} color="#fff" />
                     <Text style={styles.logoutText}>Editar Perfil</Text>
@@ -35,7 +37,7 @@ export function PerfilScreen({ navigation }: HomeTypes) {
             </View>
             <Text style={styles.historyTitle}>Histórico</Text>
             <FlatList
-                data={posts}
+                data={userPosts}
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => (
                     <View style={styles.historyItem}>
