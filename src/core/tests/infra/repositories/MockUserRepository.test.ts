@@ -12,7 +12,8 @@ describe("MockUserRepository", () => {
   let user2: User;
 
   beforeEach(() => {
-    repository = new MockUserRepository();
+    MockUserRepository.reset()
+    repository = MockUserRepository.getInstance();
     user1 = User.create("1", Name.create("User 1"), Email.create("user1@example.com"), Password.create("password123"));
     user2 = User.create("2", Name.create("User 2"), Email.create("user2@example.com"), Password.create("password456"));
   });

@@ -46,4 +46,8 @@ export class MockUserRepository implements IUserRepository {
   async delete(id: string): Promise<void> {
     this.users = this.users.filter(user => user.id !== id);
   }
+
+  public static reset() {
+    this.getInstance().users = [];
+  }
 }

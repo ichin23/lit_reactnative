@@ -54,4 +54,7 @@ export class MockPostRepository implements IPostRepository {
     this.posts = this.posts.filter(post => post.id !== id);
   }
 
+  public static reset() {
+    this.getInstance().posts = [];
+  }
 }

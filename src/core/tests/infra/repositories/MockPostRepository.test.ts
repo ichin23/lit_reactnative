@@ -10,7 +10,8 @@ describe("MockPostRepository", () => {
   let post2: Post;
 
   beforeEach(() => {
-    repository = new MockPostRepository();
+    MockPostRepository.reset();
+    repository = MockPostRepository.getInstance();
     post1 = Post.create("1", "Post 1", "user1", "User 1", 0, "url1", new Date().toISOString(), GeoCoordinates.create(10, 20));
     post2 = Post.create("2", "Post 2", "user2", "User 2", 0, "url2", new Date().toISOString(), GeoCoordinates.create(30, 40));
   });
@@ -25,7 +26,7 @@ describe("MockPostRepository", () => {
     await repository.save(post1);
     await repository.save(post2);
     const all = await repository.getAll();
-    expect(all).toEqual([...posts, post1, post2]);
+    expect(all).toEqual([post1, post2]);
   });
 
   it("should find posts by user id", async () => {

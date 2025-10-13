@@ -4,6 +4,7 @@ import App from '../../App';
 import Toast from 'react-native-toast-message';
 import { AuthProvider } from '../context/auth';
 import { Navigation } from '../navigations';
+import { PostProvider } from '../context/post';
 
 jest.mock('react-native-toast-message', () => ({
   show: jest.fn(),
@@ -12,7 +13,13 @@ jest.mock('react-native-toast-message', () => ({
 
 describe('User flow', () => {
   it('should register, login, edit profile and delete account', async () => {
-    const { getByText, getByPlaceholderText, queryByText } = render(<App />);
+    const { getByText, getByPlaceholderText, queryByText } = render(
+      <AuthProvider>
+        <PostProvider>
+          <Navigation />
+        </PostProvider>
+      </AuthProvider>
+    );
 
     // Register
     fireEvent.press(getByText('Go to Register'));

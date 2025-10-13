@@ -5,7 +5,7 @@ import { Post } from "../../../../domain/entities/Post";
 
 describe("FindPosts", () => {
   it("should find all posts", async () => {
-    const mockPostRepository = new MockPostRepository();
+    const mockPostRepository = MockPostRepository.getInstance();
     const findPosts = new FindPosts(mockPostRepository);
 
     const post1 = Post.create("1", "Post 1", "user1", "User 1", 0, "url1", new Date().toISOString(), { latitude: 10, longitude: 20 });
@@ -16,7 +16,7 @@ describe("FindPosts", () => {
 
     const posts = await findPosts.execute();
 
-    expect(posts).toHaveLength(7);
+    expect(posts).toHaveLength(2);
     expect(posts).toContainEqual(post1);
     expect(posts).toContainEqual(post2);
   });
