@@ -61,7 +61,7 @@ export function CameraScreen({navigation}: HomeTypes) {
       await requestPermissionMedia();
     }
     const asset = await MediaLibrary.createAssetAsync(photo!.uri)
-    MediaLibrary.createAlbumAsync("Images", asset, false),
+    MediaLibrary.createAlbumAsync("Lit", asset, false),
     onPhotoTaken && onPhotoTaken(photo!.uri);
     navigation.goBack();
     Toast.show({
