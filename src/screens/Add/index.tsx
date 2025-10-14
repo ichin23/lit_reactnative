@@ -116,7 +116,7 @@ export default function AddScreen({ navigation }: HomeTypes) {
         style={styles.input}
         value={title}
         onChangeText={setTitle}
-        placeholder="Digite o título"
+        placeholder="Digite o Título"
         placeholderTextColor={ColorTheme.primary}
       />
       <TouchableOpacity style={styles.photoBox} onPress={() => navigation.navigate('Camera', { onPhotoTaken: (uri: string) => setPhoto(uri) })}>

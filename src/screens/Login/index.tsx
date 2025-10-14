@@ -7,6 +7,7 @@ import { TextInput } from "react-native-gesture-handler";
 import { useState } from "react";
 import { Email } from "../../core/domain/value-objects/Email";
 import { Password } from "../../core/domain/value-objects/Password";
+import Toast from "react-native-toast-message";
 
 
 export function LoginScreen({ navigation }: LoginTypes) {
@@ -20,7 +21,13 @@ export function LoginScreen({ navigation }: LoginTypes) {
             const passwordVO = Password.create(password);
             await login(emailVO.value, passwordVO.value);
         } catch (error) {
-            alert(error.message);
+            Toast.show({
+                text1: "Ocorreu um erro no login",
+                text2: error.message,
+                type: "error",
+                position: "top",
+                duration: 3000,
+            });
         }
     }
 
