@@ -1,5 +1,7 @@
+import { IUserRepository } from "../../repositories/IUserRepository";
+
 export class LogoutUser {
-  constructor() {}
+  constructor(private readonly repository: IUserRepository) {}
 
   async execute(params: { userId: string }): Promise<void> {
     // In a real-world scenario, this would invalidate a token or session.

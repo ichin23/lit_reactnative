@@ -11,21 +11,7 @@ export class LoginUser {
   }): Promise<User> {
     const { email, password } = params;
 
-    const user = await this.userRepository.findByEmail(email);
-
-    if (!user) {
-      throw new Error('Credenciais inválidas');
-    }
-
-    const isPasswordValid = await this.comparePassword(
-      password,
-      user.password.value
-    );
-
-    if (!isPasswordValid) {
-      throw new Error('Credenciais inválidas');
-    }
-
+    const user = await this.userRepository.signInUser({email, password});
     return user;
   }
 

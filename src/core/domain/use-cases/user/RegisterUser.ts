@@ -4,16 +4,18 @@ import { Name } from '../../value-objects/Name';
 import { Email } from '../../value-objects/Email';
 import { Password } from '../../value-objects/Password';
 import { GeoCoordinates } from '../../value-objects/GeoCoordinates';
+import { Username } from '../../value-objects/Username';
 
 export class RegisterUser {
   constructor(private readonly userRepository: IUserRepository) { }
 
   async execute(params: {
     name: string;
+    username: string,
     email: string;
     password: string;
   }): Promise<User> {
-    const { name, email, password } = params;
+    const { name, username, email, password } = params;
 
     const userExists = await this.userRepository.findByEmail(email);
 
@@ -26,6 +28,7 @@ export class RegisterUser {
     const user = User.create(
       Math.random().toString(),
       Name.create(name),
+      Username.create(username),
       Email.create(email),
       Password.create(hashedPassword)
     );
