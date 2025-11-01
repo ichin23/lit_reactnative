@@ -29,8 +29,9 @@ export function RegisterScreen({ navigation }: LoginTypes) {
             await register({name: name, username: username, email: email, password: password});
             Toast.show({
                 text1: "Cadastrado com sucesso!",
+                text2: "Confirme seu email no link enviado",
                 position: "top",
-                visibilityTime: 3000,
+                visibilityTime: 5000,
                 autoHide: true,
                 type: "success"
             });

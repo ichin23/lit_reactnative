@@ -9,6 +9,8 @@ export default {
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "scheme": "litapp",
+    "deepLinking": true,
     "config": {
         "googleMaps": {
           "apiKey": process.env.GOOGLE_MAPS_API_KEY_ANDROID

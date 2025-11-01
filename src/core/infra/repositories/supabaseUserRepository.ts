@@ -100,7 +100,10 @@ export class SupabaseUserRepository implements IUserRepository{
     async signUpUser(user:User): Promise<User> {
         const {data:authData, error:authError} = await supabase.auth.signUp({
             email: user.email.value,
-            password: user.password.value
+            password: user.password.value,
+            options:{
+                emailRedirectTo: "litapp://auth"
+            }
         })
         if (authError) {
            throw new Error(authError.message);
