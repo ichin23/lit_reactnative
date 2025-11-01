@@ -6,7 +6,7 @@ const userUseCases = makeUserUseCases();
 export interface AuthContextData {
     user: User | null;
     login: (email: string, pass: string) => Promise<void>;
-    register: (user: {name:string, email: string, password: string}) => Promise<void>;
+    register: (user: {name:string, username:string,  email: string, password: string}) => Promise<void>;
     logout: () => void;
     update: (user: {id:string, name:string, email:string}) => Promise<void>;
     deleteUser: (userId:string) => Promise<void>;
@@ -22,11 +22,13 @@ export const AuthProvider = ({ children }: IProvider) => {
     const [user, setUser] = useState<User | null>(null);
 
     const login = async (email: string, password: string) => {
+        console.log("Login: ", email, password)
         const user = await userUseCases.loginUser.execute({email, password})
+        console.log(user)
         setUser(user);
     };
 
-    const register = async (user: {name:string, email: string, password: string}) => {
+    const register = async (user: {name:string, username:string, email: string, password: string}) => {
         await userUseCases.registerUser.execute(user)
     };
 

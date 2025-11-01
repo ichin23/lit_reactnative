@@ -1,14 +1,15 @@
 export class Username {
   private constructor(readonly value: string) {}
 
-  static create(name: string): Username {
-    if (!this.validate(name)) {
+  static create(username: string): Username {
+    if (!this.validate(username)) {
       throw new Error('Invalid username');
     }
-    return new Username(name);
+    return new Username(username);
   }
 
-  private static validate(name: string): boolean {
-    return name.split(" ").length == 1
+  private static validate(username: string): boolean {
+    console.log(username, username.split(" ").length)
+    return username.split(" ").length == 1
   }
 }

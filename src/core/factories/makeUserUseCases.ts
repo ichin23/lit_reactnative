@@ -19,7 +19,7 @@ export function makeUserUseCases(){
     const deleteUser = new DeleteUser(userRepository);
     const findUserById = new FindUserById(userRepository);
     const findUserByEmail = new FindUserByEmail(userRepository);
-    const logoutUser = new LogoutUser();
+    const logoutUser = new LogoutUser(userRepository);
 
     return {
         registerUser,

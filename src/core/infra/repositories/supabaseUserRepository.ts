@@ -38,7 +38,7 @@ export class SupabaseUserRepository implements IUserRepository{
         return User.create(
             profileData.id,
             Name.create(profileData.name),
-            Username.create(profileData.name),
+            Username.create(profileData.username),
             Email.create(profileData.email),
             Password.create('hashed_123'), // Password is not stored in the entity
         );
@@ -60,7 +60,7 @@ export class SupabaseUserRepository implements IUserRepository{
         return User.create(
             profileData.id,
             Name.create(profileData.name),
-            Username.create(profileData.name),
+            Username.create(profileData.username),
             Email.create(profileData.email),
             Password.create('hashed_123'), // Password is not stored in the entity
         );
@@ -137,6 +137,10 @@ export class SupabaseUserRepository implements IUserRepository{
         });
 
         if (authError) {
+            console.log(authError.code)
+            console.log(authError.cause)
+            console.log(authError.message)
+            console.log(authError.stack)
             throw new Error(authError.message);
         }
         if (!authData.user) {
@@ -151,13 +155,11 @@ export class SupabaseUserRepository implements IUserRepository{
         return user;
     }
 
-    signOut(): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-    getCurrentUser(): Promise<User | null> {
-        throw new Error("Method not implemented.");
-    }
-    updateUser(userId: string, data: Partial<User>): Promise<User> {
-        throw new Error("Method not implemented.");
+    async signOut(): Promise<void> {
+        const {error:authError} = await supabase.auth.signOut();
+
+        if (authError) {
+            throw new Error(authError.message);
+        }
     }
 }

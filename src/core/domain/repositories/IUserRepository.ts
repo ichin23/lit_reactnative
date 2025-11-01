@@ -11,6 +11,4 @@ export interface IUserRepository{
     signUpUser(user:User):Promise<User>;
     signInUser(data: {email:string, password:string}): Promise<User>
     signOut():Promise<void>
-    getCurrentUser():Promise<User|null>
-    updateUser(userId:string, data:Partial<User>): Promise<User>
 }

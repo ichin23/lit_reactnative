@@ -10,7 +10,7 @@ export class LoginUser {
     password: string;
   }): Promise<User> {
     const { email, password } = params;
-
+    console.log("Login: ", email, password)
     const user = await this.userRepository.signInUser({email, password});
     return user;
   }

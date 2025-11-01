@@ -8,6 +8,12 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: ColorTheme.primary,
   },
+  keyCont:{
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "visible",
+    width: "100%"
+  },
   form:{
     flex: 1,
     width: '100%',

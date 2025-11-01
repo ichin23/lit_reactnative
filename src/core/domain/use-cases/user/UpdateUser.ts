@@ -3,6 +3,7 @@ import { IUserRepository } from '../../repositories/IUserRepository';
 import { Name } from '../../value-objects/Name';
 import { Email } from '../../value-objects/Email';
 import { GeoCoordinates } from '../../value-objects/GeoCoordinates';
+import { Username } from '../../value-objects/Username';
 
 export class UpdateUser {
   constructor(private readonly userRepository: IUserRepository) { }
@@ -10,9 +11,10 @@ export class UpdateUser {
   async execute(params: {
     id: string;
     name?: string;
+    username?: string,
     email?: string;
   }): Promise<User> {
-    const { id, name, email} = params;
+    const { id, name, username,  email} = params;
 
     const user = await this.userRepository.findById(id);
 
@@ -21,11 +23,13 @@ export class UpdateUser {
     }
 
     const newName = name ? Name.create(name) : user.name;
+    const newUsername = username ? Username.create(username) : user.username
     const newEmail = email ? Email.create(email) : user.email;
 
     const updatedUser = User.create(
       user.id,
       newName,
+      newUsername,
       newEmail,
       user.password, // Password is not updated here for security reasons
     );
