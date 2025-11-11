@@ -9,6 +9,7 @@ import { FindPosts } from "../domain/use-cases/post/FindPosts";
 import { UpdatePost } from "../domain/use-cases/post/UpdatePost";
 import { MockPostRepository } from "../infra/repositories/MockPostRepository";
 import { SupabasePostRepository } from "../infra/repositories/supabasePostRepository";
+import { AddPartiu } from "../domain/use-cases/post/AddPartiu";
 
 
 export function makePostUseCases(){
@@ -22,6 +23,7 @@ export function makePostUseCases(){
     const findPostByGeoLocation = new FindPostByGeoLocation(postRepository);
     const findClusteredPostByGeoLocation = new FindClusteredPostByGeoLocation(postRepository);
     const findPostById = new FindPostById(postRepository);
+    const addPartiu = new AddPartiu(postRepository);
 
     return {
         createPost,
@@ -31,7 +33,8 @@ export function makePostUseCases(){
         findPostByUserId,
         findPostByGeoLocation,
         findClusteredPostByGeoLocation,
-        findPostById
+        findPostById,
+        addPartiu
     }
     
 }

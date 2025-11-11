@@ -17,7 +17,11 @@ export function HomeScreen({ navigation }: HomeTypes) {
     }, []);
 
     useEffect(() => {
-        fetchPosts();
+        try{
+            fetchPosts();
+        }catch(error){
+            console.error("Fetch:", error)
+        }
     }, []);
     
     return <View style={styles.container}>

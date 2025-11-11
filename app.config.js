@@ -11,11 +11,6 @@ export default {
     "newArchEnabled": true,
     "scheme": "litapp",
     "deepLinking": true,
-    "config": {
-        "googleMaps": {
-          "apiKey": process.env.GOOGLE_MAPS_API_KEY_ANDROID
-        }
-      },
     "splash": {
       "image": "./assets/adaptive-icon.png",
       "resizeMode": "contain",
@@ -25,7 +20,7 @@ export default {
       "supportsTablet": true,
       "bundleIdentifier": "com.lit.lit",
       "config": {
-        "googleMapsApiKey":  process.env.GOOGLE_MAPS_API_KEY_ANDROID
+        "googleMapsApiKey":  process.env.GOOGLE_MAPS_API_KEY_IOS
       }
     },
     "android": {

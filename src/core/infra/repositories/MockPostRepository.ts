@@ -21,8 +21,16 @@ export class MockPostRepository implements IPostRepository {
     console.log("Post add mock")
   }
 
-  async getAll(): Promise<Post[]> {
-    return this.posts;
+  async getAll(sortBy?: 'createdAt' | 'partiu'): Promise<Post[]> {
+    let sortedPosts = [...this.posts];
+
+    if (sortBy === 'createdAt') {
+      sortedPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    } else if (sortBy === 'partiu') {
+      sortedPosts.sort((a, b) => b.partiu - a.partiu);
+    }
+
+    return sortedPosts;
   }
 
   async findById(id: string): Promise<Post | undefined> {
@@ -44,15 +52,22 @@ export class MockPostRepository implements IPostRepository {
   }
 
 
-  async update(post: Post): Promise<void> {
-    const index = this.posts.findIndex(p => p.id === post.id);
+  async update(id: string, post: Partial<Post>): Promise<void> {
+    const index = this.posts.findIndex(p => p.id === id);
     if (index !== -1) {
-      this.posts[index] = post;
+      this.posts[index] = { ...this.posts[index], ...post };
     }
   }
 
   async delete(id: string): Promise<void> {
     this.posts = this.posts.filter(post => post.id !== id);
+  }
+
+  async addPartiu(postId: string, userId: string): Promise<void> {
+    const post = this.posts.find(p => p.id === postId);
+    if (post) {
+      post.partiu++;
+    }
   }
 
   public static reset() {

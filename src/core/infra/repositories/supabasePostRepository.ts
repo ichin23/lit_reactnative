@@ -29,9 +29,17 @@ export class SupabasePostRepository implements IPostRepository{
         }
 
     }
-    async getAll(): Promise<Post[]> {
-        const response = await supabase.from('post').select()
+    async getAll(sortBy?: 'createdAt' | 'partiu'): Promise<Post[]> {
+        let query = supabase.from('post').select();
 
+        if (sortBy === 'createdAt') {
+            query = query.order('createdAt', { ascending: false });
+        } else if (sortBy === 'partiu') {
+            query = query.order('partiu', { ascending: false });
+        }
+
+        const response = await query;
+        console.log(response)
         return response.data as Post[]
     }
     async findById(id: string): Promise<Post | undefined> {
@@ -61,11 +69,18 @@ export class SupabasePostRepository implements IPostRepository{
         console.log("Find Clustered Geolocation Response: ", response)
         return (response.data as ClusteredPost[]) || [];
     }
-    update(post: Post): Promise<void> {
-        throw new Error("Method not implemented.");
+    async update(id: string, post: Partial<Post>): Promise<void> {
+        await supabase.from('post').update(post).match({ id });
     }
     async delete(id: string): Promise<void> {
         await supabase.from('post').delete().match({ id });
+    }
+
+    async addPartiu(postId: string, userId: string): Promise<void> {
+        const { error } = await supabase.from('partiu').insert({ idPost: postId, idUser: userId });
+        if (error) {
+            throw new Error(error.message);
+        }
     }
 
 }

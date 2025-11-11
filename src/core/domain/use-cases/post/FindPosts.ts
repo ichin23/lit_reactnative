@@ -6,7 +6,7 @@ export class FindPosts{
     constructor(private readonly postRepository: IPostRepository) { }
 
     async execute(): Promise<Post[]> {
-        return this.postRepository.getAll();
+        return this.postRepository.getAll('createdAt');
     }
 
 }

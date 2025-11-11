@@ -102,4 +102,56 @@ export const styles = StyleSheet.create({
         justifyContent: "center",
         elevation: 4,
     },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    modalImage: {
+        width: 200,
+        height: 200,
+        borderRadius: 8,
+        marginBottom: 15,
+    },
+    modalTextInput: {
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        marginBottom: 15,
+        paddingHorizontal: 10,
+        width: 200,
+    },
+    button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        marginBottom: 10,
+    },
+    buttonClose: {
+        backgroundColor: "#2196F3",
+    },
+    buttonDelete: {
+        backgroundColor: "red",
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
 })

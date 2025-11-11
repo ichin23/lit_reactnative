@@ -8,27 +8,10 @@ export class UpdatePost{
     async execute(params: {
         id: string,
         title: string,
-        userId: string,
-        userName: string,
-        partiu: number,
-        imgUrl: string,
-        datetime: string,
-        geolocation: GeoCoordinates
     }): Promise<void> {
-        const { id, title, userId, userName, partiu, imgUrl, datetime, geolocation } = params;
+        const { id, title } = params;
 
-        const post = Post.create(
-            id,
-            title,
-            userId,
-            userName,
-            partiu,
-            imgUrl,
-            datetime,
-            geolocation
-        );
-
-        await this.postRepository.update(post);
+        await this.postRepository.update(id, { title });
     }
 
 }

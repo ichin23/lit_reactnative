@@ -83,3 +83,37 @@ begin
         clusters cl;
 end;
 $$ language plpgsql;
+
+-- Create partiu table
+create table public.partiu (
+  "idUser" uuid not null default auth.uid (),
+  created_at timestamp with time zone not null default now(),
+  "idPost" uuid not null,
+  constraint partiu_pkey primary key ("idUser", "idPost"),
+  constraint partiu_idPost_fkey foreign KEY ("idPost") references post (id) on delete cascade,
+  constraint partiu_idUser_fkey foreign KEY ("idUser") references "user" (id) on delete cascade
+) TABLESPACE pg_default;
+
+-- Function to update partiu count on post
+CREATE OR REPLACE FUNCTION update_partiu_count()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE post
+    SET partiu = (SELECT COUNT(*) FROM partiu WHERE "idPost" = NEW."idPost")
+    WHERE id = NEW."idPost";
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to update partiu count
+CREATE TRIGGER partiu_insert_trigger
+AFTER INSERT ON partiu
+FOR EACH ROW
+EXECUTE FUNCTION update_partiu_count();
+
+-- RLS policy for partiu table
+CREATE POLICY "Allow authenticated users to insert"
+ON public.partiu
+FOR INSERT
+TO authenticated
+WITH CHECK (true);

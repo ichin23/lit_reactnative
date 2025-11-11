@@ -27,7 +27,7 @@ export function ExplorarScreen() {
         setLoading(true);
         try {
             const zoom = Math.round(Math.log(360 / currentRegion.longitudeDelta) / Math.LN2);
-            const radius = 50; // 100km radius, a ser ajustado conforme o necessario
+            const radius = 10; // 100km radius, a ser ajustado conforme o necessario
 
             const posts = await findClusteredPostByGeoLocation.execute({
                 latitude: currentRegion.latitude,
@@ -36,6 +36,7 @@ export function ExplorarScreen() {
                 zoom
             });
             setClusteredPosts(posts);
+            console.log(posts)
         } catch (error) {
             console.error("Failed to fetch clustered posts:", error);
         } finally {
@@ -57,8 +58,8 @@ export function ExplorarScreen() {
         const initialRegion = {
             latitude: currentLocation.coords.latitude,
             longitude: currentLocation.coords.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+            latitudeDelta: 0.000922,
+            longitudeDelta: 0.000421,
         };
         setRegion(initialRegion);
         await fetchClusteredPosts(initialRegion);
