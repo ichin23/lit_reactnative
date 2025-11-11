@@ -23,6 +23,7 @@ export default {
     },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.lit.lit",
       "config": {
         "googleMapsApiKey":  process.env.GOOGLE_MAPS_API_KEY_ANDROID
       }
@@ -37,7 +38,7 @@ export default {
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
       ],
-      "package": "com.ichin23.lit_reactnative",
+      "package": "com.lit.lit_reactnative",
       "config": {
         "googleMaps": {
           "apiKey": process.env.GOOGLE_MAPS_API_KEY_ANDROID
@@ -75,6 +76,14 @@ export default {
       "eas": {
         "projectId": "a3df065e-ebc5-4954-9896-c610606cc9ff"
       }
-    }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a3df065e-ebc5-4954-9896-c610606cc9ff",
+      "fallbackToCacheTimeout": 0
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    
   }
 }

@@ -44,6 +44,8 @@ export class SupabaseUserRepository implements IUserRepository{
         );
     }
     async findById(id: string): Promise<User | null> {
+
+        
         const { data: profileData, error: profileError } = await supabase
             .from('user')
             .select('*')
@@ -82,7 +84,7 @@ export class SupabaseUserRepository implements IUserRepository{
         
         const { data: { user: authUser } } = await supabase.auth.getUser();
         if (authUser && authUser.email !== user.email.value) {
-            const { error: authError } = await supabase.auth.updateUser({ email: user.email.value });
+            const { error: authError } = await supabase.auth.updateUser({ email: user.email.value,  });
             if (authError) {
                 throw new Error(`Profile updated, but failed to update auth email: ${authError.message}`);
             }

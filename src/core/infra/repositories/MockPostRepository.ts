@@ -18,6 +18,7 @@ export class MockPostRepository implements IPostRepository {
 
   async save(post: Post): Promise<void> {
     this.posts.push(post);
+    console.log("Post add mock")
   }
 
   async getAll(): Promise<Post[]> {

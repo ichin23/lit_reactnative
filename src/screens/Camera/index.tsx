@@ -9,6 +9,7 @@ import ColorTheme from '../../styles/colors';
 import { HomeTypes } from '../../navigations/MainStackNavigation';
 import { useRoute } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import * as ImagePicker from 'expo-image-picker'
 
 export function CameraScreen({navigation}: HomeTypes) {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -50,7 +51,7 @@ export function CameraScreen({navigation}: HomeTypes) {
 
   async function takePicture() {
     if (ref.current) {
-      const picture = await ref.current.takePictureAsync({ imageType: 'jpg', quality: 0.6 })
+      const picture = await ref.current.takePictureAsync({ imageType: 'jpg', quality: 0.6, shutterSound: false })
       setPhoto(picture)
     }
   }
@@ -61,8 +62,10 @@ export function CameraScreen({navigation}: HomeTypes) {
       await requestPermissionMedia();
     }
     const asset = await MediaLibrary.createAssetAsync(photo!.uri)
+
+    
     MediaLibrary.createAlbumAsync("Lit", asset, false),
-    onPhotoTaken && onPhotoTaken(photo!.uri);
+    onPhotoTaken && onPhotoTaken(asset);
     navigation.goBack();
     Toast.show({
       text1: "Foto salva na galeria!",
@@ -75,16 +78,17 @@ export function CameraScreen({navigation}: HomeTypes) {
 
   if (photo) {
     return (
-      <ImageBackground source={{ uri: photo.uri }} style={styles.camera}>
+      <View style={styles.container}>
+        <ImageBackground source={{ uri: photo.uri }} style={styles.camera}></ImageBackground>
         <View style={styles.headerSave}>
-          <TouchableOpacity onPress={() => setPhoto(undefined)}>
-            <AntDesign name="backward" size={70} color={ColorTheme.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={savePhoto}>
-            <AntDesign name="save" size={70} color={ColorTheme.primary} />
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
+            <TouchableOpacity onPress={() => setPhoto(undefined)}>
+              <AntDesign name="backward" size={70} color={ColorTheme.primary} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={savePhoto}>
+              <AntDesign name="save" size={70} color={ColorTheme.primary} />
+            </TouchableOpacity>
+          </View>
+      </View>
     )
   }
 
