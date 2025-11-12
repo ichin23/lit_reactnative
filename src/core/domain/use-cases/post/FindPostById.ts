@@ -1,12 +1,10 @@
 import { Post } from "../../entities/Post";
 import { IPostRepository } from "../../repositories/IPostRepository";
 
-
-export class FindPosts{
+export class FindPostById {
     constructor(private readonly postRepository: IPostRepository) { }
 
-    async execute(): Promise<Post[]> {
-        return this.postRepository.getAll('createdAt');
+    async execute(id: string): Promise<Post | undefined> {
+        return this.postRepository.findById(id);
     }
-
 }

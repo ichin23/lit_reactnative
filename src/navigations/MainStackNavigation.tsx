@@ -7,11 +7,12 @@ import AddScreen from "../screens/Add";
 import { StaticParamList } from "@react-navigation/native";
 import { CameraScreen } from "../screens/Camera";
 import { EditProfileScreen } from "../screens/EditProfile";
+import { Asset } from "expo-asset";
 
 type MainStackParamList = {
     MainStack: undefined,
     Add: undefined,
-    Camera: { onPhotoTaken: (uri: string) => void } | undefined,
+    Camera: { onPhotoTaken: (photo: Asset) => void } | undefined,
     EditProfile: undefined
 };
 
