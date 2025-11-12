@@ -106,7 +106,8 @@ export const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 22
+        marginTop: 22,
+        backgroundColor: ColorTheme.blackOpacity
     },
     modalView: {
         margin: 20,
@@ -139,9 +140,14 @@ export const styles = StyleSheet.create({
     },
     button: {
         borderRadius: 20,
-        padding: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
         elevation: 2,
         marginBottom: 10,
+    },
+    buttonSalvar:{
+        backgroundColor: "#2196F3",
+        
     },
     buttonClose: {
         backgroundColor: "#2196F3",

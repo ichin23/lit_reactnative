@@ -95,7 +95,7 @@ export function PerfilScreen({ navigation }: HomeTypes) {
                             value={newTitle}
                         />
                         <TouchableOpacity
-                            style={[styles.button, styles.buttonClose]}
+                            style={[styles.button, styles.buttonSalvar]}
                             onPress={handleUpdatePost}
                         >
                             <Text style={styles.textStyle}>Salvar</Text>

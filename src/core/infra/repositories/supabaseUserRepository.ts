@@ -142,10 +142,6 @@ export class SupabaseUserRepository implements IUserRepository{
         });
 
         if (authError) {
-            console.log(authError.code)
-            console.log(authError.cause)
-            console.log(authError.message)
-            console.log(authError.stack)
             throw new Error(authError.message);
         }
         if (!authData.user) {

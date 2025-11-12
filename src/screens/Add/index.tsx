@@ -4,7 +4,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import ColorTheme from "../../styles/colors";
 import { styles } from "./styles";
 import { HomeTypes } from "../../navigations/MainStackNavigation";
-
+import * as MediaLibrary from 'expo-media-library'
 import * as Location from 'expo-location';
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as ImagePicker from 'expo-image-picker';
@@ -17,6 +17,8 @@ import { useRoute } from "@react-navigation/native";
 import { PostContext } from "../../context/post";
 import { Asset } from "expo-asset";
 import { supabase } from "../../core/infra/supabase/client/supabaseClient";
+import { CameraCapturedPicture } from "expo-camera";
+import { decode } from 'base64-arraybuffer'
 
 
 const { createPost } = makePostUseCases();
@@ -29,7 +31,7 @@ export default function AddScreen({ navigation }: HomeTypes) {
   const { user } = useAuth();
   const { fetchPosts } = useContext(PostContext);
   const [title, setTitle] = useState("Forró do André");
-  const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset | null>(null);
+  const [photo, setPhoto] = useState<CameraCapturedPicture | null>(null);
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -81,7 +83,7 @@ export default function AddScreen({ navigation }: HomeTypes) {
     });
 
     if (!result.canceled) {
-      setPhoto(result.assets[0]);
+      /*setPhoto(result.assets[0]);*/
     }
   }
 
@@ -93,18 +95,24 @@ export default function AddScreen({ navigation }: HomeTypes) {
       const fileExt = photo.uri.split(".").pop();
       const fileName = `${user.id}_${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
-      console.log("path: ", filePath)
-      const formData = new FormData();
-      formData.append('file', {
-        uri: photo.uri,
-        name: photo.fileName || `photo_${Date.now()}.jpg`, // Tenta pegar o nome, senão gera um
-        type: photo.mimeType ?? 'image/jpeg', // Tenta pegar o tipo, senão usa um padrão
-      } as unknown as Blob);
+
+      // console.log("path: ", filePath)
+      // const formData = new FormData();
+      // formData.append('file', {
+      //   uri: photo.uri,
+      //   name: photo.fileName || `photo_${Date.now()}.jpg`, // Tenta pegar o nome, senão gera um
+      //   type: photo.mimeType ?? 'image/jpeg', // Tenta pegar o tipo, senão usa um padrão
+      // } as unknown as Blob);
+
+      console.log("Iniciando upload")
 
       const { error: uploadError } = await supabase.storage
         .from('lit-photos')
-        .upload(`${filePath}`, formData);
-
+        .upload(`${filePath}`, decode(photo.base64!), {
+          contentType: 'image/jpeg'
+        });
+      console.log("Fim do upload")
+      
       if (uploadError) {
         console.log('Upload error:', uploadError);
         throw new Error('Falha ao fazer upload da imagem');
@@ -236,7 +244,7 @@ export default function AddScreen({ navigation }: HomeTypes) {
           placeholderTextColor={ColorTheme.primary}
         />
 
-        <TouchableOpacity style={styles.photoBox} onPress={takePhoto}>
+        <TouchableOpacity style={styles.photoBox} onPress={()=>navigation.navigate("Camera",{ onPhotoTaken:(asset:CameraCapturedPicture)=>{console.log(asset.base64); if(asset.base64) setPhoto(asset)}})}>
           {photo ? (
             <Image
               source={{ uri: photo.uri }}

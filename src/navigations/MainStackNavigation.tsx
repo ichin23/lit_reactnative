@@ -8,11 +8,13 @@ import { StaticParamList } from "@react-navigation/native";
 import { CameraScreen } from "../screens/Camera";
 import { EditProfileScreen } from "../screens/EditProfile";
 import { Asset } from "expo-asset";
+import * as MediaLibrary from "expo-media-library"
+import { CameraCapturedPicture } from "expo-camera";
 
 type MainStackParamList = {
     MainStack: undefined,
     Add: undefined,
-    Camera: { onPhotoTaken: (photo: Asset) => void } | undefined,
+    Camera: { onPhotoTaken: (photo: CameraCapturedPicture) => void } | undefined,
     EditProfile: undefined
 };
 

@@ -51,7 +51,7 @@ export function CameraScreen({navigation}: HomeTypes) {
 
   async function takePicture() {
     if (ref.current) {
-      const picture = await ref.current.takePictureAsync({ imageType: 'jpg', quality: 0.6, shutterSound: false })
+      const picture = await ref.current.takePictureAsync({ imageType: 'jpg', quality: 0.6, shutterSound: false, base64: true })
       setPhoto(picture)
     }
   }
@@ -65,7 +65,8 @@ export function CameraScreen({navigation}: HomeTypes) {
 
     
     MediaLibrary.createAlbumAsync("Lit", asset, false),
-    onPhotoTaken && onPhotoTaken(asset);
+    
+    onPhotoTaken && onPhotoTaken(photo);
     navigation.goBack();
     Toast.show({
       text1: "Foto salva na galeria!",
