@@ -70,6 +70,10 @@ export class MockPostRepository implements IPostRepository {
     }
   }
 
+  async getFeedClusters(): Promise<Post[][]> {
+    return [this.posts];
+  }
+
   public static reset() {
     this.getInstance().posts = [];
   }

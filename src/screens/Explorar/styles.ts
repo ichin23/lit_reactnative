@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     },
     refreshButton: {
         position: 'absolute',
-        bottom: 20,
+        top: 20,
         right: 20,
         backgroundColor: 'white',
         borderRadius: 30,

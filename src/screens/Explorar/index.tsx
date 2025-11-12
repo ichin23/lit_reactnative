@@ -27,7 +27,7 @@ export function ExplorarScreen() {
         setLoading(true);
         try {
             const zoom = Math.round(Math.log(360 / currentRegion.longitudeDelta) / Math.LN2);
-            const radius = 10; // 100km radius, a ser ajustado conforme o necessario
+            const radius = 100000; // 100km radius, a ser ajustado conforme o necessario
 
             const posts = await findClusteredPostByGeoLocation.execute({
                 latitude: currentRegion.latitude,
@@ -36,7 +36,8 @@ export function ExplorarScreen() {
                 zoom
             });
             setClusteredPosts(posts);
-            console.log(posts)
+            
+            console.log("POSTs MAP: ", posts)
         } catch (error) {
             console.error("Failed to fetch clustered posts:", error);
         } finally {
@@ -58,8 +59,8 @@ export function ExplorarScreen() {
         const initialRegion = {
             latitude: currentLocation.coords.latitude,
             longitude: currentLocation.coords.longitude,
-            latitudeDelta: 0.000922,
-            longitudeDelta: 0.000421,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
         };
         setRegion(initialRegion);
         await fetchClusteredPosts(initialRegion);
@@ -72,22 +73,23 @@ export function ExplorarScreen() {
     }, [location, handleLocationAndPosts]);
 
     const handleMarkerPress = async (item: ClusteredPost) => {
-        if (region && item.is_cluster) {
-            const newRegion = {
-                latitude: item.latitude,
-                longitude: item.longitude,
-                latitudeDelta: region.latitudeDelta / 2,
-                longitudeDelta: region.longitudeDelta / 2,
-            };
-            mapRef.current?.animateToRegion(newRegion, 500);
-        } else {
-            if(!item.post_id) return;
-            const post = await findPostById.execute(item.post_id);
+            if(region){
+
+                const newRegion = {
+                    latitude: item.posts[0].geolocation.latitude,
+                    longitude: item.posts[0].geolocation.longitude,
+                    latitudeDelta: region.latitudeDelta / 2,
+                    longitudeDelta: region.longitudeDelta / 2,
+                };
+                mapRef.current?.animateToRegion(newRegion, 500);
+            }
+            if(!item.posts[0].id) return;
+            const post = await findPostById.execute(item.posts[0].id);
             if(post){
-                setSelectedPosts([post]);
+                setSelectedPosts(item.posts);
                 setPopupVisible(true);
             }
-        }
+        
     };
 
     const onRegionChangeComplete = (newRegion: Region) => {
@@ -115,21 +117,20 @@ export function ExplorarScreen() {
                     onRegionChangeComplete={onRegionChangeComplete}
                 >
                     {clusteredPosts && clusteredPosts.map((item) => (
+                        
                         <Marker
-                            key={item.id}
+                            key={item.cluster_id}
                             coordinate={{
-                                latitude: item.latitude,
-                                longitude: item.longitude,
+                                latitude: item.posts[0].geolocation.latitude,
+                                longitude: item.posts[0].geolocation.longitude,
                             }}
                             onPress={() => handleMarkerPress(item)}
                         >
-                            {item.is_cluster ? (
-                                <View style={styles.clusterMarker}>
-                                    <Text style={styles.clusterText}>{item.point_count}</Text>
-                                </View>
-                            ) : (
-                                <MaterialIcons name="place" size={32} color="red" />
-                            )}
+                            
+                            <View style={styles.clusterMarker}>
+                                <Text style={styles.clusterText}>{item.posts.length}</Text>
+                            </View>
+                            
                         </Marker>
                     ))}
                 </MapView>

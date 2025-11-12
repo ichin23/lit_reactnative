@@ -1,12 +1,8 @@
 import { Post } from "../entities/Post";
 
 export type ClusteredPost = {
-    id: string;
-    is_cluster: boolean;
-    point_count: number;
-    latitude: number;
-    longitude: number;
-    post_id: string | null;
+    cluster_id: string;
+    posts: Post[]
 };
 
 
@@ -20,4 +16,5 @@ export interface IPostRepository{
     update(id: string, post: Partial<Post>): Promise<void>;
     delete(id: string): Promise<void>;
     addPartiu(postId: string, userId: string): Promise<void>;
+    getFeedClusters(): Promise<Post[][]>;
 }

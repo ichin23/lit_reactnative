@@ -1,11 +1,10 @@
-
 import { FindUserByEmail } from "../../../../domain/use-cases/user/FindUserByEmail";
 import { MockUserRepository } from "../../../../infra/repositories/MockUserRepository";
 import { User } from "../../../../domain/entities/User";
 import { Name } from "../../../../domain/value-objects/Name";
 import { Email } from "../../../../domain/value-objects/Email";
 import { Password } from "../../../../domain/value-objects/Password";
-import { GeoCoordinates } from "../../../../domain/value-objects/GeoCoordinates";
+import { Username } from "../../../../domain/value-objects/Username";
 
 describe("FindUserByEmail", () => {
   const mockUserRepository = new MockUserRepository();
@@ -14,6 +13,7 @@ describe("FindUserByEmail", () => {
   const user = User.create(
     "1",
     Name.create("Test User"),
+    Username.create("testuser"),
     Email.create("test@example.com"),
     Password.create("hashed_password")
   );

@@ -2,26 +2,25 @@ import React, { createContext, useState, ReactNode, useContext } from 'react';
 import { Post } from '../core/domain/entities/Post';
 import { makePostUseCases } from '../core/factories/makePostUseCases';
 
-const { findPosts } = makePostUseCases();
+const { findFeedClusters } = makePostUseCases();
 
 interface PostContextData {
-    posts: Post[];
+    postClusters: Post[][];
     fetchPosts: () => Promise<void>;
 }
 
 export const PostContext = createContext<PostContextData>({} as PostContextData);
 
 export const PostProvider = ({ children }: { children: ReactNode }) => {
-    const [posts, setPosts] = useState<Post[]>([]);
+    const [postClusters, setPostClusters] = useState<Post[][]>([]);
 
     const fetchPosts = async () => {
-        const fetchedPosts = await findPosts.execute();
-        setPosts(fetchedPosts)
-        console.log(posts);
+        const fetchedClusters = await findFeedClusters.execute();
+        setPostClusters(fetchedClusters);
     };
 
     return (
-        <PostContext.Provider value={{ posts, fetchPosts }}>
+        <PostContext.Provider value={{ postClusters, fetchPosts }}>
             {children}
         </PostContext.Provider>
     );

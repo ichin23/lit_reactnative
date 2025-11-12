@@ -60,9 +60,9 @@ export class SupabasePostRepository implements IPostRepository{
         return response.data as Post[]
     }
     async findClusteredByGeolocation(latitude: number, longitude: number, radius: number, zoom: number): Promise<ClusteredPost[]> {
-        const response = await supabase.rpc('get_clustered_posts', {
-            lat: latitude,
-            long: longitude,
+        const response = await supabase.rpc('get_feed_clusters_by_location', {
+            center_lat: latitude,
+            center_lon: longitude,
             radius_meters: radius,
             zoom_level: zoom
         })
@@ -73,7 +73,11 @@ export class SupabasePostRepository implements IPostRepository{
         await supabase.from('post').update(post).match({ id });
     }
     async delete(id: string): Promise<void> {
-        await supabase.from('post').delete().match({ id });
+        console.log(id)
+        const {error} = await supabase.from('post').delete().match({ id });
+        if(error){
+            console.error(error)
+        }
     }
 
     async addPartiu(postId: string, userId: string): Promise<void> {
@@ -81,6 +85,21 @@ export class SupabasePostRepository implements IPostRepository{
         if (error) {
             throw new Error(error.message);
         }
+    }
+
+    async getFeedClusters(): Promise<Post[][]> {
+        const { data, error } = await supabase.rpc('get_feed_clusters', { radius_meters: 30 });
+
+        if (error) {
+            console.error(error)
+            throw new Error(error.message);
+        }
+
+        if (!data) {
+            return [];
+        }
+        console.log(data)
+        return data.map((cluster: any) => cluster.posts);
     }
 
 }
