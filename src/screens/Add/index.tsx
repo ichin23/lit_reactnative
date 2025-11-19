@@ -19,6 +19,7 @@ import { Asset } from "expo-asset";
 import { supabase } from "../../core/infra/supabase/client/supabaseClient";
 import { CameraCapturedPicture } from "expo-camera";
 import { decode } from 'base64-arraybuffer'
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 const { createPost } = makePostUseCases();
@@ -40,14 +41,12 @@ export default function AddScreen({ navigation }: HomeTypes) {
     async function getCurrentLocation() {
       if (!location) {
         let { status } = await Location.requestForegroundPermissionsAsync();
-        console.log(status)
         if (status !== 'granted') {
           setErrorMsg('Permission to access location was denied');
           return;
         }
 
         let location = await Location.getCurrentPositionAsync({});
-        console.log(location)
         setLocation(location);
         let place = await Location.reverseGeocodeAsync(location.coords);
         console.log(place);
@@ -64,7 +63,6 @@ export default function AddScreen({ navigation }: HomeTypes) {
     // 2) Permissão da galeria (necessária no Android 13+ para retornar o asset)
     const mediaPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    console.log(cameraPermission.status, mediaPermission.status)
     if (cameraPermission.status !== 'granted' || mediaPermission.status !== 'granted') {
       Toast.show({
         text1: "Você recusou o acesso à câmera!",
@@ -104,17 +102,13 @@ export default function AddScreen({ navigation }: HomeTypes) {
       //   type: photo.mimeType ?? 'image/jpeg', // Tenta pegar o tipo, senão usa um padrão
       // } as unknown as Blob);
 
-      console.log("Iniciando upload")
-
       const { error: uploadError } = await supabase.storage
         .from('lit-photos')
         .upload(`${filePath}`, decode(photo.base64!), {
           contentType: 'image/jpeg'
         });
-      console.log("Fim do upload")
       
       if (uploadError) {
-        console.log('Upload error:', uploadError);
         throw new Error('Falha ao fazer upload da imagem');
       }
 
@@ -123,10 +117,8 @@ export default function AddScreen({ navigation }: HomeTypes) {
         .getPublicUrl(filePath)
 
       if (!urlData?.publicUrl) {
-        console.log('Get URL error:');
         throw new Error('Falha ao obter URL pública da imagem');
       }
-      console.log(urlData.publicUrl)
       return urlData.publicUrl;
     }catch(error){
       throw error;
@@ -169,9 +161,6 @@ export default function AddScreen({ navigation }: HomeTypes) {
         }
         
         const imageUrl = await uploadPhotoAndGetUrl();
-        alert(imageUrl)
-        console.log(user.id)
-        console.log(user.name.value)
         await createPost.execute({
           userId: user.id,
           userName: user.name.value,
@@ -203,7 +192,7 @@ export default function AddScreen({ navigation }: HomeTypes) {
       }
     }    // Render component
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <MaterialIcons name="arrow-back" size={28} color={ColorTheme.primary} />
         </TouchableOpacity>
@@ -266,6 +255,6 @@ export default function AddScreen({ navigation }: HomeTypes) {
         >
           <Text style={styles.addButtonText}>Adicionar</Text>
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
     );
   }

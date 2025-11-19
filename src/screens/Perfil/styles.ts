@@ -5,8 +5,8 @@ export const styles = StyleSheet.create({
   container: {
         flex: 1,
         backgroundColor: ColorTheme.background,
-        paddingHorizontal: 20,
-        paddingTop: 32,
+        paddingHorizontal: 5,
+        paddingTop: 0,
     },
     header: {
         flexDirection: "row",
@@ -68,7 +68,9 @@ export const styles = StyleSheet.create({
     historyItem: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 18,
+        backgroundColor: ColorTheme.white,
+        padding: 10,
+        borderRadius: 8,
     },
     historyName: {
         fontWeight: "bold",
@@ -110,10 +112,11 @@ export const styles = StyleSheet.create({
         backgroundColor: ColorTheme.blackOpacity
     },
     modalView: {
-        margin: 20,
+        margin: 10,
         backgroundColor: "white",
         borderRadius: 20,
-        padding: 35,
+        paddingVertical: 35,
+        paddingHorizontal: 15,
         alignItems: "center",
         shadowColor: "#000",
         shadowOffset: {
@@ -125,8 +128,8 @@ export const styles = StyleSheet.create({
         elevation: 5
     },
     modalImage: {
-        width: 200,
-        height: 200,
+        width: 300,
+        height: 300,
         borderRadius: 8,
         marginBottom: 15,
     },
@@ -136,28 +139,41 @@ export const styles = StyleSheet.create({
         borderWidth: 1,
         marginBottom: 15,
         paddingHorizontal: 10,
-        width: 200,
+        width: 300,
+        borderRadius: 8,
     },
     button: {
-        borderRadius: 20,
+        borderRadius: 8,
         paddingVertical: 10,
         paddingHorizontal: 15,
         elevation: 2,
         marginBottom: 10,
     },
     buttonSalvar:{
-        backgroundColor: "#2196F3",
+        backgroundColor: ColorTheme.primary,
         
-    },
-    buttonClose: {
-        backgroundColor: "#2196F3",
-    },
-    buttonDelete: {
-        backgroundColor: "red",
     },
     textStyle: {
         color: "white",
         fontWeight: "bold",
         textAlign: "center"
+    },
+    rightActionsContainer: {
+        flexDirection: 'row',
+        height: '100%',
+    },
+    deleteButton: {
+        backgroundColor: 'red',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 75,
+        height: '100%',
+    },
+    editButton: {
+        backgroundColor: ColorTheme.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 75,
+        height: '100%',
     },
 })

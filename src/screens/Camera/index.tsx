@@ -3,13 +3,14 @@ import { useEffect, useRef, useState } from 'react';
 import { Button, Text, TouchableOpacity, View, Alert, ImageBackground } from 'react-native';
 import { styles } from './styles'
 import '../../styles/colors';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 import * as MediaLibrary from 'expo-media-library'
 import ColorTheme from '../../styles/colors';
 import { HomeTypes } from '../../navigations/MainStackNavigation';
 import { useRoute } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export function CameraScreen({navigation}: HomeTypes) {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -38,10 +39,10 @@ export function CameraScreen({navigation}: HomeTypes) {
 
   if (!permission.granted) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <Text style={styles.message}>Você precisa dar permissão para acesso à Câmera</Text>
         <Button onPress={requestPermission} title="grant permission" />
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -79,31 +80,33 @@ export function CameraScreen({navigation}: HomeTypes) {
 
   if (photo) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <ImageBackground source={{ uri: photo.uri }} style={styles.camera}></ImageBackground>
-        <View style={styles.headerSave}>
-            <TouchableOpacity onPress={() => setPhoto(undefined)}>
-              <AntDesign name="backward" size={70} color={ColorTheme.primary} />
+        <View style={styles.footerSave}>
+            <TouchableOpacity style={styles.button} onPress={() => setPhoto(undefined)}>
+              <Text style={styles.buttonText}>Voltar</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={savePhoto}>
-              <AntDesign name="save" size={70} color={ColorTheme.primary} />
+            <TouchableOpacity style={styles.button}  onPress={savePhoto}>
+              <Text style={styles.buttonText}>Salvar</Text>
             </TouchableOpacity>
           </View>
-      </View>
+      </SafeAreaView>
     )
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <CameraView style={styles.camera} facing={facing} ref={ref}  ratio='1:1'/>
-      <View style={styles.headerCamera}>
+      
+      <View style={styles.footerCamera}>
         <TouchableOpacity onPress={toggleCameraFacing}>
-          <AntDesign name="retweet" size={70} color={ColorTheme.primary} />
+          <AntDesign name="retweet" size={60} color={ColorTheme.primary} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={takePicture} style={styles.ball} />
+        <TouchableOpacity onPress={toggleCameraFacing}>
+          <Ionicons name="flash" size={60} color={ColorTheme.primary} />
         </TouchableOpacity>
       </View>
-      <View style={styles.footerCamera}>
-        <TouchableOpacity onPress={takePicture} style={styles.ball} />
-      </View>
-    </View>
+    </SafeAreaView>
   );
 }

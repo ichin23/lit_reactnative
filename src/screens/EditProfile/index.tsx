@@ -9,6 +9,7 @@ import { Password } from "../../core/domain/value-objects/Password";
 import { makeUserUseCases } from "../../core/factories/makeUserUseCases";
 import { HomeTypes } from "../../navigations/MainStackNavigation";
 import Toast from "react-native-toast-message";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export function EditProfileScreen({ navigation }: HomeTypes) {
@@ -62,7 +63,7 @@ export function EditProfileScreen({ navigation }: HomeTypes) {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Editar Perfil</Text>
 
             <Text style={styles.label}>Nome</Text>
@@ -78,6 +79,6 @@ export function EditProfileScreen({ navigation }: HomeTypes) {
             <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
                 <Text style={styles.deleteButtonText}>Excluir Conta</Text>
             </TouchableOpacity>
-        </View>
+        </SafeAreaView>
     );
 }

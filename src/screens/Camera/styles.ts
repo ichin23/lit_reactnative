@@ -5,7 +5,7 @@ export const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: '#000',
+        padding: 10
     },
     message: {
         textAlign: 'center',
@@ -29,6 +29,7 @@ export const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         width: '100%',
+        gap: 30
     },
     ball: {
         width: 70,
@@ -36,11 +37,21 @@ export const styles = StyleSheet.create({
         backgroundColor: ColorTheme.primary,
         borderRadius: 35,
     },
-    headerSave: {
+    footerSave: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
         position: 'absolute',
-        top: 50,
+        bottom: 50,
+    },
+    button: {
+        flexGrow: 2,
+        textAlign: 'center'
+    },
+    buttonText: {
+        textAlign: 'center',
+        fontSize: 20,
+        color: ColorTheme.primary,
+        fontWeight: 800
     }
 });

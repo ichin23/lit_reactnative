@@ -11,6 +11,7 @@ import { Email } from "../../core/domain/value-objects/Email";
 import { Password } from "../../core/domain/value-objects/Password";
 import Toast from "react-native-toast-message";
 import { Username } from "../../core/domain/value-objects/Username";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export function RegisterScreen({ navigation }: LoginTypes) {
     const { register } = useAuth();
@@ -47,7 +48,7 @@ export function RegisterScreen({ navigation }: LoginTypes) {
         }
     }
 
-    return <View style={styles.container}>
+    return <SafeAreaView style={styles.container}>
         <KeyboardAwareScrollView style={{flex:1,  width: "100%"}} contentContainerStyle={{flexGrow:1, alignItems: "center", justifyContent: "center"}} enableOnAndroid={true} extraScrollHeight={20}>
             <Text style={styles.title}>Cadastre-se</Text>
 
@@ -71,5 +72,5 @@ export function RegisterScreen({ navigation }: LoginTypes) {
                 <Text style={styles.backLoginButtonText}>Voltar para Login</Text>
             </TouchableOpacity>
         </KeyboardAwareScrollView>
-    </View>;
+    </SafeAreaView>;
 }

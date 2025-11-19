@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import { Linking, StyleSheet, Text, View } from 'react-native';
 import { Navigation } from './src/navigations';
@@ -57,13 +58,15 @@ function App() {
   }
 
   return (
-    isUpdateAvailable ? <UpdateScreen onUpdate={downloadAndReload}/> : <GestureHandlerRootView style={{flex: 1}}>
-      <AuthProvider>
-        <PostProvider>
-          <Navigation />
-        </PostProvider>
-        <Toast />
-      </AuthProvider>
+    <GestureHandlerRootView style={{flex: 1}}>
+      {isUpdateAvailable ? <UpdateScreen onUpdate={downloadAndReload}/> :
+        <AuthProvider>
+          <PostProvider>
+            <Navigation />
+          </PostProvider>
+          <Toast />
+        </AuthProvider>
+      }
     </GestureHandlerRootView>
   );
 }

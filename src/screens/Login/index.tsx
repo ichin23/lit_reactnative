@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Email } from "../../core/domain/value-objects/Email";
 import { Password } from "../../core/domain/value-objects/Password";
 import Toast from "react-native-toast-message";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export function LoginScreen({ navigation }: LoginTypes) {
@@ -31,7 +32,7 @@ export function LoginScreen({ navigation }: LoginTypes) {
         }
     }
 
-    return <View style={styles.container}>
+    return <SafeAreaView style={styles.container}>
         
         <FontAwesome5 name="map-marker-alt" size={80} color="#F6F6F6" />
         <Text style={styles.title}>Lit.</Text>
@@ -58,5 +59,5 @@ export function LoginScreen({ navigation }: LoginTypes) {
         <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.registerButton}>
           <Text style={styles.registerButtonText}>Go to Register</Text>
         </TouchableOpacity>
-    </View>;
+    </SafeAreaView>;
 }
