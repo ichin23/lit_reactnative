@@ -10,16 +10,18 @@ export class User {
     readonly name: Name,
     readonly username: Username,
     readonly email: Email,
-    readonly password: Password
-  ) {}
+    readonly password: Password,
+    readonly imgUrl?: string
+  ) { }
 
   static create(
     id: string,
     name: Name,
     username: Username,
     email: Email,
-    password: Password
+    password: Password,
+    imgUrl?: string
   ): User {
-    return new User(id, name, username, email, password);
+    return new User(id, name, username, email, password, imgUrl);
   }
 }

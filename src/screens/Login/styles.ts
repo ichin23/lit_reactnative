@@ -37,8 +37,13 @@ export const styles = StyleSheet.create({
     marginTop: 10,
     color: ColorTheme.secondary,
   },
-  registerButtonText:{
+  registerButtonText: {
     padding: 10,
     color: ColorTheme.secondary,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 })

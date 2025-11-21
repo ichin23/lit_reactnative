@@ -13,8 +13,9 @@ export class UpdateUser {
     name?: string;
     username?: string,
     email?: string;
+    imgUrl?: string;
   }): Promise<User> {
-    const { id, name, username,  email} = params;
+    const { id, name, username, email, imgUrl } = params;
 
     const user = await this.userRepository.findById(id);
 
@@ -25,6 +26,7 @@ export class UpdateUser {
     const newName = name ? Name.create(name) : user.name;
     const newUsername = username ? Username.create(username) : user.username
     const newEmail = email ? Email.create(email) : user.email;
+    const newImgUrl = imgUrl ? imgUrl : user.imgUrl;
 
     const updatedUser = User.create(
       user.id,
@@ -32,6 +34,7 @@ export class UpdateUser {
       newUsername,
       newEmail,
       user.password, // Password is not updated here for security reasons
+      newImgUrl
     );
 
     await this.userRepository.update(updatedUser);

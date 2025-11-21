@@ -6,16 +6,16 @@ const userUseCases = makeUserUseCases();
 export interface AuthContextData {
     user: User | null;
     login: (email: string, pass: string) => Promise<void>;
-    register: (user: {name:string, username:string,  email: string, password: string}) => Promise<void>;
+    register: (user: { name: string, username: string, email: string, password: string }) => Promise<void>;
     logout: () => void;
-    update: (user: {id:string, name:string, email:string}) => Promise<void>;
-    deleteUser: (userId:string) => Promise<void>;
+    update: (user: { id: string, name: string, email: string, imgUrl?: string }) => Promise<void>;
+    deleteUser: (userId: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextData | undefined>(undefined);
 
 export interface IProvider {
-  children: ReactNode
+    children: ReactNode
 }
 
 export const AuthProvider = ({ children }: IProvider) => {
@@ -23,27 +23,27 @@ export const AuthProvider = ({ children }: IProvider) => {
 
     const login = async (email: string, password: string) => {
         console.log("Login: ", email, password)
-        const user = await userUseCases.loginUser.execute({email, password})
+        const user = await userUseCases.loginUser.execute({ email, password })
         console.log(user)
         setUser(user);
     };
 
-    const register = async (user: {name:string, username:string, email: string, password: string}) => {
+    const register = async (user: { name: string, username: string, email: string, password: string }) => {
         await userUseCases.registerUser.execute(user)
     };
 
     const logout = () => {
-        userUseCases.logoutUser.execute({userId: user?.id!})
+        userUseCases.logoutUser.execute({ userId: user?.id! })
         setUser(null);
     };
 
-    const update = async (user: {id:string, name:string, email:string})=>{
+    const update = async (user: { id: string, name: string, email: string, imgUrl?: string }) => {
         let newUser = await userUseCases.updateUser.execute(user);
         setUser(newUser);
     }
 
-    const deleteUser = async (userId:string)=>{
-        await userUseCases.deleteUser.execute({id: userId});
+    const deleteUser = async (userId: string) => {
+        await userUseCases.deleteUser.execute({ id: userId });
         setUser(null);
     }
 

@@ -20,7 +20,7 @@ export default {
       "supportsTablet": true,
       "bundleIdentifier": "com.lit.lit",
       "config": {
-        "googleMapsApiKey":  process.env.GOOGLE_MAPS_API_KEY_IOS
+        "googleMapsApiKey": process.env.GOOGLE_MAPS_API_KEY_IOS
       }
     },
     "android": {
@@ -31,7 +31,9 @@ export default {
       "edgeToEdgeEnabled": true,
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ],
       "package": "com.lit.lit_reactnative",
       "config": {
@@ -79,6 +81,6 @@ export default {
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    
+
   }
 }

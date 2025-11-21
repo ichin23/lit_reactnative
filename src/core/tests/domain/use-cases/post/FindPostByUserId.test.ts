@@ -8,9 +8,9 @@ describe("FindPostByUserId", () => {
     const mockPostRepository = new MockPostRepository();
     const findPostByUserId = new FindPostByUserId(mockPostRepository);
 
-    const post1 = Post.create("1", "Post 1", "user1", "User 1", 0, "url1", new Date().toISOString(), { latitude: 10, longitude: 20 });
-    const post2 = Post.create("2", "Post 2", "user1", "User 1", 0, "url2", new Date().toISOString(), { latitude: 11, longitude: 21 });
-    const post3 = Post.create("3", "Post 3", "user2", "User 2", 0, "url3", new Date().toISOString(), { latitude: 12, longitude: 22 });
+    const post1 = Post.create("1", "Post 1", "user1", "User 1", undefined, 0, "url1", new Date().toISOString(), { latitude: 10, longitude: 20 });
+    const post2 = Post.create("2", "Post 2", "user1", "User 1", undefined, 0, "url2", new Date().toISOString(), { latitude: 11, longitude: 21 });
+    const post3 = Post.create("3", "Post 3", "user2", "User 2", undefined, 0, "url3", new Date().toISOString(), { latitude: 12, longitude: 22 });
 
     await mockPostRepository.save(post1);
     await mockPostRepository.save(post2);

@@ -8,56 +8,13 @@ import { PostContext } from "../../context/post";
 import { useFocusEffect } from "@react-navigation/native";
 import { makePostUseCases } from "../../core/factories/makePostUseCases";
 import { Post } from "../../core/domain/entities/Post";
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const { findPostByUserId, deletePost, updatePost } = makePostUseCases();
 
-const PostItem = ({ item, openModal, onDelete }: { item: Post, openModal: (post: Post) => void, onDelete: (postId: string) => void }) => {
-    const swipeableRef = useRef<Swipeable>(null);
 
-    const closeSwipeable = () => {
-        swipeableRef.current?.close();
-    }
 
-    const renderRightActions = () => (
-        <View style={styles.rightActionsContainer}>
-            <TouchableOpacity
-                onPress={() => {
-                    openModal(item);
-                    closeSwipeable();
-                }}
-                style={styles.editButton}
-            >
-                <MaterialIcons name="edit" size={24} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity
-                onPress={() => {
-                    onDelete(item.id)
-                    closeSwipeable();
-                }}
-                style={styles.deleteButton}
-            >
-                <MaterialIcons name="delete" size={24} color="#fff" />
-            </TouchableOpacity>
-        </View>
-    );
-
-    return (
-        <View style={{ marginHorizontal: 0, marginVertical: 9 }}>
-            <Swipeable ref={swipeableRef} renderRightActions={renderRightActions}>
-                <View style={styles.historyItem}>
-                    <View style={{ flex: 1 }}>
-                        <Text style={styles.historyName}>{item.userName}</Text>
-                        <Text style={styles.historyPlace}>Visitou {item.title}</Text>
-                        <Text style={styles.historyDate}>Em {new Date(item.createdAt).toLocaleDateString()}</Text>
-                    </View>
-                    <Image source={{ uri: item.imgUrl }} style={styles.historyImage} />
-                </View>
-            </Swipeable>
-        </View>
-    );
-};
 
 export function PerfilScreen({ navigation }: HomeTypes) {
     const { logout, user } = useAuth();
@@ -65,6 +22,7 @@ export function PerfilScreen({ navigation }: HomeTypes) {
     const [userPosts, setUserPosts] = useState<Post[]>([]);
     const [selectedPost, setSelectedPost] = useState<Post | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
     const [newTitle, setNewTitle] = useState("");
 
     const fetchUserPosts = useCallback(async () => {
@@ -109,7 +67,7 @@ export function PerfilScreen({ navigation }: HomeTypes) {
                 await updatePost.execute({ id: selectedPost.id, title: newTitle });
                 await fetchUserPosts();
                 await fetchPosts();
-                setModalVisible(false);
+                setEditModalVisible(false);
                 Alert.alert("Sucesso", "Post atualizado com sucesso!");
             } catch (error) {
                 Alert.alert("Erro", "Não foi possível atualizar o post.");
@@ -126,20 +84,26 @@ export function PerfilScreen({ navigation }: HomeTypes) {
     const renderHeader = () => (
         <>
             <View style={styles.avatarContainer}>
-                <View style={styles.avatar} />
+                <Image
+                    source={user?.imgUrl ? { uri: user.imgUrl } : { uri: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y' }}
+                    style={styles.avatar}
+                />
+                <View style={styles.usernameOverlay}>
+                    <Text style={styles.usernameText}>@{user?.username?.value}</Text>
+                </View>
                 <Text style={styles.name}>{user!.name.value}</Text>
                 <Text style={styles.places}>{userPosts.length} locais</Text>
-                <TouchableOpacity style={styles.logoutButton} onPress={() => navigation.navigate('EditProfile')}>
-                    <MaterialIcons name="edit" size={20} color="#fff" />
-                    <Text style={styles.logoutText}>Editar Perfil</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.logoutButton} onPress={logout}>
-                    <MaterialIcons name="logout" size={20} color="#fff" />
-                    <Text style={styles.logoutText}>Sair</Text>
-                </TouchableOpacity>
+
+
             </View>
             <Text style={styles.historyTitle}>Histórico</Text>
         </>
+    );
+
+    const renderGridItem = ({ item }: { item: Post }) => (
+        <TouchableOpacity style={styles.gridItem} onPress={() => openModal(item)}>
+            <Image source={{ uri: item.imgUrl }} style={styles.gridImage} />
+        </TouchableOpacity>
     );
 
     return (
@@ -151,6 +115,51 @@ export function PerfilScreen({ navigation }: HomeTypes) {
                 onRequestClose={() => setModalVisible(false)}
             >
                 <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                    <View style={styles.modalContainer}>
+                        <TouchableWithoutFeedback>
+                            <View style={styles.modalContent}>
+                                {selectedPost && (
+                                    <View style={styles.modalHeaderContainer}>
+                                        <Image source={{ uri: selectedPost.imgUrl }} style={styles.modalHeaderImage} />
+                                        <Text style={styles.modalHeaderTitle}>{selectedPost.title}</Text>
+                                        <Text style={styles.modalHeaderDate}>
+                                            Visitou em {new Date(selectedPost.createdAt).toLocaleDateString()} às {new Date(selectedPost.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </Text>
+                                    </View>
+                                )}
+                                <TouchableOpacity style={styles.modalOption} onPress={() => {
+                                    setModalVisible(false);
+                                    setNewTitle(selectedPost?.title || "");
+                                    setEditModalVisible(true);
+                                }}>
+                                    <MaterialIcons name="edit" size={24} color="#333" />
+                                    <Text style={styles.modalOptionText}>Editar</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.modalOption} onPress={() => {
+                                    if (selectedPost) {
+                                        handleDeletePost(selectedPost.id);
+                                    }
+                                }}>
+                                    <MaterialIcons name="delete" size={24} color="#c00" />
+                                    <Text style={[styles.modalOptionText, { color: '#c00' }]}>Excluir</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.modalOption, { borderBottomWidth: 0 }]} onPress={() => setModalVisible(false)}>
+                                    <MaterialIcons name="close" size={24} color="#666" />
+                                    <Text style={[styles.modalOptionText, { color: '#666' }]}>Cancelar</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={editModalVisible}
+                onRequestClose={() => setEditModalVisible(false)}
+            >
+                <TouchableWithoutFeedback onPress={() => setEditModalVisible(false)}>
                     <View style={styles.centeredView}>
                         <TouchableWithoutFeedback>
                             <View style={styles.modalView}>
@@ -175,7 +184,8 @@ export function PerfilScreen({ navigation }: HomeTypes) {
             <FlatList
                 data={userPosts}
                 keyExtractor={item => item.id}
-                renderItem={({ item }) => <PostItem item={item} openModal={openModal} onDelete={handleDeletePost} />}
+                renderItem={renderGridItem}
+                numColumns={3}
                 contentContainerStyle={{ paddingBottom: 80 }}
                 ListHeaderComponent={renderHeader}
             />

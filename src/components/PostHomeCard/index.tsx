@@ -5,6 +5,7 @@ import { Post } from "../../core/domain/entities/Post";
 import { makePostUseCases } from "../../core/factories/makePostUseCases";
 import { useAuth } from "../../context/auth";
 import { usePost } from "../../context/post";
+import { formatTimeAgo } from "../../utils/dateUtils";
 
 const { addPartiu } = makePostUseCases();
 
@@ -28,8 +29,14 @@ export function PostHomeCard({ post }: { post: Post }) {
         <View style={styles.card}>
             <Image source={{ uri: post.imgUrl }} style={styles.image} />
             <View style={styles.overlay}>
-                <Text style={styles.userName}>{post.userName}</Text>
-                <Text style={styles.timeAgo}>{post.datetime}</Text>
+                <Image
+                    source={{ uri: post.userProfileImgUrl || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y' }}
+                    style={styles.userAvatar}
+                />
+                <View style={styles.userInfo}>
+                    <Text style={styles.userName}>{post.username}</Text>
+                    <Text style={styles.timeAgo}>{formatTimeAgo(post.createdAt)}</Text>
+                </View>
             </View>
             <View style={styles.bottomRow}>
                 <View style={styles.locationRow}>

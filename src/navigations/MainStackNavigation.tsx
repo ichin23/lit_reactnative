@@ -10,12 +10,15 @@ import { EditProfileScreen } from "../screens/EditProfile";
 import { Asset } from "expo-asset";
 import * as MediaLibrary from "expo-media-library"
 import { CameraCapturedPicture } from "expo-camera";
+import { MapScreen } from "../screens/Map";
+import { GeoCoordinates } from "../core/domain/value-objects/GeoCoordinates";
 
-type MainStackParamList = {
+export type MainStackParamList = {
     MainStack: undefined,
     Add: undefined,
     Camera: { onPhotoTaken: (photo: CameraCapturedPicture) => void } | undefined,
-    EditProfile: undefined
+    EditProfile: undefined,
+    Map: { destination: GeoCoordinates, locationName: string }
 };
 
 const MainStack = createNativeStackNavigator<MainStackParamList>({
@@ -23,7 +26,8 @@ const MainStack = createNativeStackNavigator<MainStackParamList>({
         MainStack: BottomMainNavigation,
         Add: AddScreen,
         Camera: CameraScreen,
-        EditProfile: EditProfileScreen
+        EditProfile: EditProfileScreen,
+        Map: MapScreen
     }
 });
 
@@ -54,6 +58,11 @@ export function MainStackNavigation() {
             <MainStack.Screen
                 name="EditProfile"
                 component={EditProfileScreen}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
+            />
+            <MainStack.Screen
+                name="Map"
+                component={MapScreen}
                 options={{ headerShown: false, animation: 'slide_from_right' }}
             />
         </MainStack.Navigator>

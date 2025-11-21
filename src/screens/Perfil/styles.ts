@@ -2,9 +2,9 @@ import { StyleSheet } from "react-native";
 import ColorTheme from "../../styles/colors";
 
 export const styles = StyleSheet.create({
-  container: {
+    container: {
         flex: 1,
-        backgroundColor: ColorTheme.background,
+        backgroundColor: "#fff",
         paddingHorizontal: 5,
         paddingTop: 0,
     },
@@ -30,6 +30,17 @@ export const styles = StyleSheet.create({
         borderRadius: 50,
         backgroundColor: "#e0e0e0",
         marginBottom: 8,
+    },
+    usernameOverlay: {
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 12,
+    },
+    usernameText: {
+        color: "#fff",
+        fontSize: 12,
+        fontWeight: "bold",
     },
     name: {
         fontSize: 20,
@@ -65,44 +76,37 @@ export const styles = StyleSheet.create({
         alignSelf: "flex-start",
         marginBottom: 8,
     },
-    historyItem: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: ColorTheme.white,
-        padding: 10,
-        borderRadius: 8,
+    gridItem: {
+        flex: 1,
+        margin: 1,
+        aspectRatio: 1,
+        maxWidth: '33.33%',
     },
-    historyName: {
-        fontWeight: "bold",
-        color: "#222",
+    gridImage: {
+        width: '100%',
+        height: '100%',
+    },
+    modalHeaderContainer: {
+        marginBottom: 20,
+        alignItems: 'center',
+    },
+    modalHeaderImage: {
+        width: '100%',
+        height: 250,
+        borderRadius: 12,
+        marginBottom: 12,
+    },
+    modalHeaderTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'center',
+        marginBottom: 4,
+    },
+    modalHeaderDate: {
         fontSize: 14,
-    },
-    historyPlace: {
-        color: "#222",
-        fontSize: 14,
-    },
-    historyDate: {
-        color: "#888",
-        fontSize: 13,
-    },
-    historyImage: {
-        width: 70,
-        height: 70,
-        borderRadius: 8,
-        marginLeft: 12,
-        backgroundColor: "#eee",
-    },
-    fab: {
-        position: "absolute",
-        right: 24,
-        bottom: 32,
-        backgroundColor: "#c00",
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        alignItems: "center",
-        justifyContent: "center",
-        elevation: 4,
+        color: '#666',
+        textAlign: 'center',
     },
     centeredView: {
         flex: 1,
@@ -149,9 +153,9 @@ export const styles = StyleSheet.create({
         elevation: 2,
         marginBottom: 10,
     },
-    buttonSalvar:{
+    buttonSalvar: {
         backgroundColor: ColorTheme.primary,
-        
+
     },
     textStyle: {
         color: "white",
@@ -175,5 +179,31 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         width: 75,
         height: '100%',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        padding: 20,
+    },
+    modalOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0',
+    },
+    modalOptionText: {
+        fontSize: 18,
+        marginLeft: 15,
+        color: '#333',
+    },
+    optionsButton: {
+        padding: 8,
     },
 })

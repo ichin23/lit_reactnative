@@ -1,4 +1,4 @@
-import { Button, Text, TouchableOpacity, View } from "react-native";
+import { Button, Text, TouchableOpacity, View, KeyboardAvoidingView, Platform, ScrollView, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { LoginTypes } from "../../navigations/LoginStackNavigations";
 import { styles } from "./styles";
 import { useAuth } from "../../context/auth";
@@ -21,43 +21,58 @@ export function LoginScreen({ navigation }: LoginTypes) {
             const emailVO = Email.create(email);
             const passwordVO = Password.create(password);
             await login(emailVO.value, passwordVO.value);
-        } catch (error) {
+        } catch (error: any) {
             Toast.show({
                 text1: "Ocorreu um erro no login",
                 text2: error.message,
                 type: "error",
                 position: "top",
-                duration: 3000,
+                visibilityTime: 3000,
             });
         }
     }
 
-    return <SafeAreaView style={styles.container}>
-        
-        <FontAwesome5 name="map-marker-alt" size={80} color="#F6F6F6" />
-        <Text style={styles.title}>Lit.</Text>
-        <Text style={styles.subtitle}>Seu próximo rolê se encontra aqui</Text>
+    return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: styles.container.backgroundColor }}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
+            >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <ScrollView
+                        contentContainerStyle={styles.scrollContainer}
+                        keyboardShouldPersistTaps="handled"
+                    >
+                        <FontAwesome5 name="map-marker-alt" size={80} color="#F6F6F6" />
+                        <Text style={styles.title}>Lit.</Text>
+                        <Text style={styles.subtitle}>Seu próximo rolê se encontra aqui</Text>
 
-        <TextInput
-            placeholder="Email"
-            placeholderTextColor={"#FFF"}
-            style={styles.input}
-            onChangeText={setEmail}
-        />
-        <TextInput
-            placeholder="Senha"
-            placeholderTextColor={"#FFF"}
-            style={styles.input}
-            onChangeText={setPassword}
-            secureTextEntry
-        />
+                        <TextInput
+                            placeholder="Email"
+                            placeholderTextColor={"#FFF"}
+                            style={styles.input}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
+                        <TextInput
+                            placeholder="Senha"
+                            placeholderTextColor={"#FFF"}
+                            style={styles.input}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                        />
 
-        <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
-          <Text style={{ color: 'white', textAlign: 'center' }}>Login</Text>
-        </TouchableOpacity>
+                        <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
+                            <Text style={{ color: 'white', textAlign: 'center' }}>Login</Text>
+                        </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.registerButton}>
-          <Text style={styles.registerButtonText}>Go to Register</Text>
-        </TouchableOpacity>
-    </SafeAreaView>;
+                        <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.registerButton}>
+                            <Text style={styles.registerButtonText}>Go to Register</Text>
+                        </TouchableOpacity>
+                    </ScrollView>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
+    );
 }

@@ -3,7 +3,7 @@ import { IPostRepository } from "../../repositories/IPostRepository";
 import { GeoCoordinates } from "../../value-objects/GeoCoordinates";
 
 
-export class CreatePost{
+export class CreatePost {
     constructor(private readonly postRepository: IPostRepository) { }
 
     async execute(params: {
@@ -21,6 +21,8 @@ export class CreatePost{
             title,
             userId,
             userName,
+            undefined,
+            userName, // Using userName as username for now, or should we pass it in params?
             0,
             imgUrl,
             datetime,

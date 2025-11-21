@@ -13,29 +13,30 @@ export function HomeScreen({ navigation }: HomeTypes) {
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-        fetchPosts().finally(() => setRefreshing(false));
+        fetchPosts().finally(() => { setRefreshing(false); console.log(postClusters[0]) });
+
     }, []);
 
     useEffect(() => {
         fetchPosts();
     }, []);
-    
+
     return <View style={styles.container}>
-            <FlatList
-                data={postClusters}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                }
-                style={{ width: '100%', padding: 10 }}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
-                    <PostCarousel posts={item} />
-                )}
-                ListEmptyComponent={() => (
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 50 }}>
-                        <Text style={{ fontSize: 18, color: '#555' }}>Nenhum post encontrado.</Text>
-                    </View>
-                )}
-            />
+        <FlatList
+            data={postClusters}
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            style={{ width: '100%', padding: 10 }}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+                <PostCarousel posts={item} />
+            )}
+            ListEmptyComponent={() => (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 50 }}>
+                    <Text style={{ fontSize: 18, color: '#555' }}>Nenhum post encontrado.</Text>
+                </View>
+            )}
+        />
     </View>;
 }
