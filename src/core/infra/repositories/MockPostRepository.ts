@@ -1,6 +1,6 @@
 import { posts } from "../../../services/data";
 import { Post } from "../../domain/entities/Post";
-import { IPostRepository } from "../../domain/repositories/IPostRepository";
+import { ClusteredPost, IPostRepository } from "../../domain/repositories/IPostRepository";
 
 export class MockPostRepository implements IPostRepository {
   private static instance: MockPostRepository;
@@ -52,10 +52,22 @@ export class MockPostRepository implements IPostRepository {
   }
 
 
+  async findClusteredByGeolocation(latitude: number, longitude: number, radius: number, zoom: number): Promise<ClusteredPost[]> {
+    // Mock implementation: return all posts in a single cluster for now
+    return [{
+      cluster_id: '1',
+      posts: this.posts
+    }];
+  }
+
   async update(id: string, post: Partial<Post>): Promise<void> {
     const index = this.posts.findIndex(p => p.id === id);
     if (index !== -1) {
-      this.posts[index] = { ...this.posts[index], ...post };
+      // Create a new Post instance with updated properties
+      const existingPost = this.posts[index];
+      // This is a bit hacky for a mock, but we can't easily update readonly properties without a proper method or reflection
+      // For now, let's assume we can cast to any to bypass readonly for the mock
+      this.posts[index] = { ...existingPost, ...post } as Post;
     }
   }
 
@@ -64,9 +76,11 @@ export class MockPostRepository implements IPostRepository {
   }
 
   async addPartiu(postId: string, userId: string): Promise<void> {
-    const post = this.posts.find(p => p.id === postId);
-    if (post) {
-      post.partiu++;
+    const index = this.posts.findIndex(p => p.id === postId);
+    if (index !== -1) {
+      const post = this.posts[index];
+      // Bypass readonly for mock
+      (post as any).partiu++;
     }
   }
 

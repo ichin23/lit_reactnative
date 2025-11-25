@@ -8,9 +8,9 @@ describe("FindPostByGeoLocation", () => {
     const mockPostRepository = new MockPostRepository();
     const findPostByGeoLocation = new FindPostByGeoLocation(mockPostRepository);
 
-    const post1 = Post.create("1", "Post 1", "user1", "User 1", 0, "url1", new Date().toISOString(), { latitude: 10, longitude: 20 });
-    const post2 = Post.create("2", "Post 2", "user2", "User 2", 0, "url2", new Date().toISOString(), { latitude: 10.001, longitude: 20.001 });
-    const post3 = Post.create("3", "Post 3", "user3", "User 3", 0, "url3", new Date().toISOString(), { latitude: 30, longitude: 40 });
+    const post1 = Post.create("1", "Post 1", "user1", "User 1", undefined, 0, "url1", new Date().toISOString(), { latitude: 10, longitude: 20 });
+    const post2 = Post.create("2", "Post 2", "user2", "User 2", undefined, 0, "url2", new Date().toISOString(), { latitude: 10.001, longitude: 20.001 });
+    const post3 = Post.create("3", "Post 3", "user3", "User 3", undefined, 0, "url3", new Date().toISOString(), { latitude: 30, longitude: 40 });
 
     await mockPostRepository.save(post1);
     await mockPostRepository.save(post2);

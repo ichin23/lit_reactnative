@@ -10,6 +10,7 @@ describe('Post', () => {
             'Primeiro post',
             'user_1',
             'Pedro',
+            undefined,
             42,
             'https://img.com/photo.jpg',
             '2025-09-30T10:00:00Z',

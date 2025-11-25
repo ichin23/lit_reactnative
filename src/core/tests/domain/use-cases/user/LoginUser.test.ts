@@ -6,6 +6,7 @@ import { Name } from "../../../../domain/value-objects/Name";
 import { Email } from "../../../../domain/value-objects/Email";
 import { Password } from "../../../../domain/value-objects/Password";
 import { GeoCoordinates } from "../../../../domain/value-objects/GeoCoordinates";
+import { Username } from "../../../../domain/value-objects/Username";
 
 describe("LoginUser", () => {
   const mockUserRepository = new MockUserRepository();
@@ -16,8 +17,9 @@ describe("LoginUser", () => {
   const user = User.create(
     "1",
     Name.create("Test User"),
-    Email.create("test@example.com"),
-    Password.create(hashedPassword)
+    Username.create("testuser"),
+    Email.create("john@example.com"),
+    Password.create("password123")
   );
 
   beforeAll(async () => {

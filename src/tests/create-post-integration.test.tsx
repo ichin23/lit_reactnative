@@ -7,6 +7,7 @@ import * as Location from 'expo-location';
 import * as MediaLibrary from 'expo-media-library';
 import { User } from '../core/domain/entities/User';
 import { Name } from '../core/domain/value-objects/Name';
+import { Username } from '../core/domain/value-objects/Username';
 import { Email } from '../core/domain/value-objects/Email';
 import { Password } from '../core/domain/value-objects/Password';
 import { Photo } from '../core/domain/value-objects/Photo';
@@ -21,44 +22,45 @@ jest.mock('expo-location');
 jest.mock('expo-media-library');
 
 jest.mock('../screens/Camera/index', () => {
-    const ReactNav = require('@react-navigation/native');
-    const { View, Button } = require('react-native');
-    return {
-        CameraScreen: ({ navigation }) => {
-            const route = ReactNav.useRoute();
-            const { onPhotoTaken } = route.params;
-            return (
-                <View>
-                    <Button title="Take Mock Photo" onPress={() => {
-                        if (onPhotoTaken) {
-                            onPhotoTaken('mocked-photo-uri');
-                        }
-                        navigation.goBack();
-                    }} />
-                </View>
-            );
-        }
-    };
+  const ReactNav = require('@react-navigation/native');
+  const { View, Button } = require('react-native');
+  return {
+    CameraScreen: ({ navigation }: { navigation: any }) => {
+      const route = ReactNav.useRoute();
+      const { onPhotoTaken } = route.params;
+      return (
+        <View>
+          <Button title="Take Mock Photo" onPress={() => {
+            if (onPhotoTaken) {
+              onPhotoTaken('mocked-photo-uri');
+            }
+            navigation.goBack();
+          }} />
+        </View>
+      );
+    }
+  };
 });
 
 const mockUser = User.create(
-    '1',
-    Name.create('Test User'),
-    Email.create('test@user.com'),
-    Password.create('password123')
+  '1',
+  Name.create('Test User'),
+  Username.create('testuser'),
+  Email.create('test@user.com'),
+  Password.create('password123')
 );
 
 jest.mock('../context/auth', () => ({
-    ...jest.requireActual('../context/auth'),
-    useAuth: () => ({
-      user: mockUser,
-      login: jest.fn(),
-      register: jest.fn(),
-      logout: jest.fn(),
-      update: jest.fn(),
-      deleteUser: jest.fn(),
-    }),
-  }));
+  ...jest.requireActual('../context/auth'),
+  useAuth: () => ({
+    user: mockUser,
+    login: jest.fn(),
+    register: jest.fn(),
+    logout: jest.fn(),
+    update: jest.fn(),
+    deleteUser: jest.fn(),
+  }),
+}));
 
 describe('Create post flow with mocked user', () => {
   it('should create a post successfully', async () => {
@@ -72,10 +74,10 @@ describe('Create post flow with mocked user', () => {
     (MediaLibrary.createAlbumAsync as jest.Mock).mockResolvedValue(null);
 
     const { getByText, getByPlaceholderText, findByText } = render(
-        <AuthProvider>
-            <PostProvider>
-                <Navigation />
-            </PostProvider>
+      <AuthProvider>
+        <PostProvider>
+          <Navigation />
+        </PostProvider>
       </AuthProvider>
     );
 

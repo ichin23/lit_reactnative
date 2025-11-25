@@ -134,6 +134,8 @@ BEGIN
             p.partiu,
             p.geolocation,
             p."createdAt",
+            u."imgUrl" as "userProfileImgUrl",
+            u.username,
             ST_ClusterDBSCAN(
                 ST_Transform(
                     ST_SetSRID(
@@ -150,6 +152,10 @@ BEGIN
             ) OVER () AS cluster_id
         FROM
             public.post p
+        LEFT JOIN
+            public.user u ON p."userId" = u.id
+        WHERE
+            (p.only_friends IS NULL OR p.only_friends = false)
     ),
     grouped_clusters AS (
         SELECT
@@ -162,8 +168,11 @@ BEGIN
                     'userId', "userId",
                     'partiu', partiu,
                     'geolocation', geolocation,
-                    'createdAt', "createdAt"
+                    'createdAt', "createdAt",
+                    'userProfileImgUrl', "userProfileImgUrl",
+                    'username', username
                 )
+                ORDER BY "createdAt" DESC
             ) AS posts,
             MAX("createdAt") as max_created_at
         FROM
@@ -204,11 +213,16 @@ BEGIN
     eps_meters := 30;
 
     WITH posts_in_radius AS (
-        SELECT *
+        SELECT 
+            p.*,
+            u."imgUrl" as "userProfileImgUrl",
+            u.username
         FROM public.post p
+        LEFT JOIN public.user u ON p."userId" = u.id
         WHERE 
             p.geolocation->>'latitude' IS NOT NULL
         AND p.geolocation->>'longitude' IS NOT NULL
+        AND (p.only_friends IS NULL OR p.only_friends = false)
         AND ST_DWithin(
             ST_Transform(
                 ST_SetSRID(
@@ -236,6 +250,8 @@ BEGIN
             p.partiu,
             p.geolocation,
             p."createdAt",
+            p."userProfileImgUrl",
+            p.username,
             ST_ClusterDBSCAN(
                 ST_Transform(
                     ST_SetSRID(
@@ -263,8 +279,11 @@ BEGIN
                     'userId', "userId",
                     'partiu', partiu,
                     'geolocation', geolocation,
-                    'createdAt', "createdAt"
+                    'createdAt', "createdAt",
+                    'userProfileImgUrl', "userProfileImgUrl",
+                    'username', username
                 )
+                ORDER BY "createdAt" DESC
             ) AS posts,
             MAX("createdAt") AS max_created_at
         FROM clustered_posts

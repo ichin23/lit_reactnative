@@ -4,7 +4,7 @@ export default {
   "expo": {
     "name": "Lit",
     "slug": "lit_reactnative",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -20,7 +20,7 @@ export default {
       "supportsTablet": true,
       "bundleIdentifier": "com.lit.lit",
       "config": {
-        "googleMapsApiKey":  process.env.GOOGLE_MAPS_API_KEY_IOS
+        "googleMapsApiKey": process.env.GOOGLE_MAPS_API_KEY_IOS
       }
     },
     "android": {
@@ -31,7 +31,9 @@ export default {
       "edgeToEdgeEnabled": true,
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ],
       "package": "com.lit.lit_reactnative",
       "config": {
@@ -65,7 +67,8 @@ export default {
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "extra": {
       "eas": {
@@ -79,6 +82,6 @@ export default {
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    
+
   }
 }

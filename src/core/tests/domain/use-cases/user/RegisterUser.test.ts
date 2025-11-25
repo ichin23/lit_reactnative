@@ -6,6 +6,7 @@ import { Name } from "../../../../domain/value-objects/Name";
 import { Email } from "../../../../domain/value-objects/Email";
 import { Password } from "../../../../domain/value-objects/Password";
 import { GeoCoordinates } from "../../../../domain/value-objects/GeoCoordinates";
+import { Username } from "../../../../domain/value-objects/Username";
 
 describe("RegisterUser", () => {
   it("should register a new user", async () => {
@@ -14,6 +15,7 @@ describe("RegisterUser", () => {
 
     const userData = {
       name: "Test User",
+      username: "testuser",
       email: "test@example.com",
       password: "password123"
     };
@@ -35,6 +37,7 @@ describe("RegisterUser", () => {
     const existingUser = User.create(
       "1",
       Name.create("Existing User"),
+      Username.create("existinguser"),
       Email.create("exists@example.com"),
       Password.create("hashed_password")
     );
@@ -42,6 +45,7 @@ describe("RegisterUser", () => {
 
     const userData = {
       name: "New User",
+      username: "newuser",
       email: "exists@example.com",
       password: "new_password",
       latitude: 3,

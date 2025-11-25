@@ -3,6 +3,7 @@ import { User } from '../../domain/entities/User';
 import { Name } from '../../domain/value-objects/Name';
 import { Email } from '../../domain/value-objects/Email';
 import { Password } from '../../domain/value-objects/Password';
+import { Username } from '../../domain/value-objects/Username';
 
 export class MockUserRepository implements IUserRepository {
   private static instance: MockUserRepository;
@@ -11,6 +12,7 @@ export class MockUserRepository implements IUserRepository {
     User.create(
       '1',
       Name.create('John Doe'),
+      Username.create('johndoe'),
       Email.create('test@test.com'),
       Password.create('hashed_password123')
     )
@@ -49,5 +51,22 @@ export class MockUserRepository implements IUserRepository {
 
   public static reset() {
     this.getInstance().users = [];
+  }
+
+  async signUpUser(user: User): Promise<User> {
+    await this.save(user);
+    return user;
+  }
+
+  async signInUser(data: { email: string; password: string; }): Promise<User> {
+    const user = await this.findByEmail(data.email);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
+  }
+
+  async signOut(): Promise<void> {
+    // Do nothing
   }
 }

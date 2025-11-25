@@ -7,6 +7,7 @@ const ColorTheme  = {
     background: '#F6F6F6',
     white: '#F6F6F6',
     black: '#060606',
+    blackOpacity: '#06060667',
     text: '#4E4E50',
     textSecondary: '#858585',
 }

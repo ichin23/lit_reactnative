@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Switch } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import ColorTheme from "../../styles/colors";
 import { styles } from "./styles";
 import { HomeTypes } from "../../navigations/MainStackNavigation";
-
+import * as MediaLibrary from 'expo-media-library'
 import * as Location from 'expo-location';
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as ImagePicker from 'expo-image-picker';
@@ -17,6 +17,9 @@ import { useRoute } from "@react-navigation/native";
 import { PostContext } from "../../context/post";
 import { Asset } from "expo-asset";
 import { supabase } from "../../core/infra/supabase/client/supabaseClient";
+import { CameraCapturedPicture } from "expo-camera";
+import { decode } from 'base64-arraybuffer'
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 const { createPost } = makePostUseCases();
@@ -29,23 +32,24 @@ export default function AddScreen({ navigation }: HomeTypes) {
   const { user } = useAuth();
   const { fetchPosts } = useContext(PostContext);
   const [title, setTitle] = useState("Forró do André");
-  const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset | null>(null);
+  const [photo, setPhoto] = useState<CameraCapturedPicture | null>(null);
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [onlyFriends, setOnlyFriends] = useState(false);
+
 
   useEffect(() => {
 
     async function getCurrentLocation() {
       if (!location) {
         let { status } = await Location.requestForegroundPermissionsAsync();
-        console.log(status)
         if (status !== 'granted') {
           setErrorMsg('Permission to access location was denied');
           return;
         }
 
         let location = await Location.getCurrentPositionAsync({});
-        console.log(location)
         setLocation(location);
         let place = await Location.reverseGeocodeAsync(location.coords);
         console.log(place);
@@ -62,7 +66,6 @@ export default function AddScreen({ navigation }: HomeTypes) {
     // 2) Permissão da galeria (necessária no Android 13+ para retornar o asset)
     const mediaPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    console.log(cameraPermission.status, mediaPermission.status)
     if (cameraPermission.status !== 'granted' || mediaPermission.status !== 'granted') {
       Toast.show({
         text1: "Você recusou o acesso à câmera!",
@@ -81,7 +84,7 @@ export default function AddScreen({ navigation }: HomeTypes) {
     });
 
     if (!result.canceled) {
-      setPhoto(result.assets[0]);
+      /*setPhoto(result.assets[0]);*/
     }
   }
 
@@ -93,20 +96,22 @@ export default function AddScreen({ navigation }: HomeTypes) {
       const fileExt = photo.uri.split(".").pop();
       const fileName = `${user.id}_${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
-      console.log("path: ", filePath)
-      const formData = new FormData();
-      formData.append('file', {
-        uri: photo.uri,
-        name: photo.fileName || `photo_${Date.now()}.jpg`, // Tenta pegar o nome, senão gera um
-        type: photo.mimeType ?? 'image/jpeg', // Tenta pegar o tipo, senão usa um padrão
-      } as unknown as Blob);
+
+      // console.log("path: ", filePath)
+      // const formData = new FormData();
+      // formData.append('file', {
+      //   uri: photo.uri,
+      //   name: photo.fileName || `photo_${Date.now()}.jpg`, // Tenta pegar o nome, senão gera um
+      //   type: photo.mimeType ?? 'image/jpeg', // Tenta pegar o tipo, senão usa um padrão
+      // } as unknown as Blob);
 
       const { error: uploadError } = await supabase.storage
         .from('lit-photos')
-        .upload(`${filePath}`, formData);
+        .upload(`${filePath}`, decode(photo.base64!), {
+          contentType: 'image/jpeg'
+        });
 
       if (uploadError) {
-        console.log('Upload error:', uploadError);
         throw new Error('Falha ao fazer upload da imagem');
       }
 
@@ -115,149 +120,163 @@ export default function AddScreen({ navigation }: HomeTypes) {
         .getPublicUrl(filePath)
 
       if (!urlData?.publicUrl) {
-        console.log('Get URL error:');
         throw new Error('Falha ao obter URL pública da imagem');
       }
-      console.log(urlData.publicUrl)
       return urlData.publicUrl;
-    }catch(error){
+    } catch (error) {
       throw error;
     }
   }
 
   const handleAddPost = async () => {
-      try {
-        if (!location) {
-          Toast.show({
-            text1: "Localização não disponível",
-            position: "top",
-            visibilityTime: 3000,
-            autoHide: true,
-            type: "error"
-          });
-          return;
-        }
-
-        if (!photo) {
-          Toast.show({
-            text1: "Por favor, tire uma foto primeiro",
-            position: "top",
-            visibilityTime: 3000,
-            autoHide: true,
-            type: "error"
-          });
-          return;
-        }
-
-        if (!user || !user.name?.value) {
-          Toast.show({
-            text1: "Erro de autenticação",
-            position: "top",
-            visibilityTime: 3000,
-            autoHide: true,
-            type: "error"
-          });
-          return;
-        }
-        
-        const imageUrl = await uploadPhotoAndGetUrl();
-        alert(imageUrl)
-        console.log(user.id)
-        console.log(user.name.value)
-        await createPost.execute({
-          userId: user.id,
-          userName: user.name.value,
-          geolocation: GeoCoordinates.create(location.coords.latitude, location.coords.longitude),
-          imgUrl: imageUrl,
-          datetime: new Date().toString(),
-          title: title
-        });
-
-        await fetchPosts();
-
+    try {
+      setIsLoading(true);
+      if (!location) {
         Toast.show({
-          text1: "Post adicionado com sucesso!",
-          position: "top",
-          visibilityTime: 3000,
-          autoHide: true,
-          type: "success"
-        });
-        navigation.goBack();
-      } catch (error: any) {
-        console.error('Error adding post:', error);
-        Toast.show({
-          text1: error?.message || 'Erro ao adicionar post',
+          text1: "Localização não disponível",
           position: "top",
           visibilityTime: 3000,
           autoHide: true,
           type: "error"
         });
+        return;
       }
-    }    // Render component
-    return (
-      <View style={styles.container}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <MaterialIcons name="arrow-back" size={28} color={ColorTheme.primary} />
-        </TouchableOpacity>
-        <Text style={styles.label}>Local:</Text>
 
-        {location ? (
-          <MapView
-            style={styles.map}
-            initialRegion={{
+      if (!photo) {
+        Toast.show({
+          text1: "Por favor, tire uma foto primeiro",
+          position: "top",
+          visibilityTime: 3000,
+          autoHide: true,
+          type: "error"
+        });
+        return;
+      }
+
+      if (!user || !user.name?.value) {
+        Toast.show({
+          text1: "Erro de autenticação",
+          position: "top",
+          visibilityTime: 3000,
+          autoHide: true,
+          type: "error"
+        });
+        return;
+      }
+
+      const imageUrl = await uploadPhotoAndGetUrl();
+      await createPost.execute({
+        userId: user.id,
+        userName: user.name.value,
+        geolocation: GeoCoordinates.create(location.coords.latitude, location.coords.longitude),
+        imgUrl: imageUrl,
+        datetime: new Date().toString(),
+        title: title,
+        only_friends: onlyFriends
+      });
+
+      await fetchPosts();
+
+      Toast.show({
+        text1: "Post adicionado com sucesso!",
+        position: "top",
+        visibilityTime: 3000,
+        autoHide: true,
+        type: "success"
+      });
+      navigation.goBack();
+    } catch (error: any) {
+      console.error('Error adding post:', error);
+      Toast.show({
+        text1: error?.message || 'Erro ao adicionar post',
+        position: "top",
+        visibilityTime: 3000,
+        autoHide: true,
+        type: "error"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }    // Render component
+  return (
+    <SafeAreaView style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <MaterialIcons name="arrow-back" size={28} color={ColorTheme.primary} />
+      </TouchableOpacity>
+      <Text style={styles.label}>Local:</Text>
+
+      {location ? (
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: 0.0122,
+            longitudeDelta: 0.0421,
+          }}
+          provider={PROVIDER_GOOGLE}
+        >
+          <Marker
+            coordinate={{
               latitude: location.coords.latitude,
               longitude: location.coords.longitude,
-              latitudeDelta: 0.0122,
-              longitudeDelta: 0.0421,
             }}
-            provider={PROVIDER_GOOGLE}
-          >
-            <Marker
-              coordinate={{
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-              }}
-            />
-          </MapView>
+          />
+        </MapView>
+      ) : (
+        <View style={styles.map}>
+          <Text>Aguardando localização...</Text>
+        </View>
+      )}
+
+      {errorMsg && <Text>{errorMsg}</Text>}
+
+      <Text style={styles.inputLabel}>Título</Text>
+      <TextInput
+        style={styles.input}
+        value={title}
+        onChangeText={setTitle}
+        placeholder="Digite o Título"
+        placeholderTextColor={ColorTheme.primary}
+        maxLength={30}
+      />
+
+      <View style={styles.toggleContainer}>
+        <Text style={styles.toggleLabel}>Apenas amigos</Text>
+        <Switch
+          value={onlyFriends}
+          onValueChange={setOnlyFriends}
+          trackColor={{ false: "#d1d5db", true: ColorTheme.primary }}
+          thumbColor={onlyFriends ? "#fff" : "#f4f3f4"}
+        />
+      </View>
+
+      <TouchableOpacity style={styles.photoBox} onPress={() => navigation.navigate("Camera", { onPhotoTaken: (asset: CameraCapturedPicture) => { console.log(asset.base64); if (asset.base64) setPhoto(asset) } })}>
+        {photo ? (
+          <Image
+            source={{ uri: photo.uri }}
+            style={styles.photo}
+            onError={(error) => console.error('Error loading image:', error)}
+          />
         ) : (
-          <View style={styles.map}>
-            <Text>Aguardando localização...</Text>
+          <View style={styles.photoPlaceholder}>
+            <MaterialIcons name="photo-camera" size={40} color={ColorTheme.primary} />
+            <Text style={styles.photoText}>Adicionar foto</Text>
           </View>
         )}
+      </TouchableOpacity>
 
-        {errorMsg && <Text>{errorMsg}</Text>}
-
-        <Text style={styles.inputLabel}>Título</Text>
-        <TextInput
-          style={styles.input}
-          value={title}
-          onChangeText={setTitle}
-          placeholder="Digite o Título"
-          placeholderTextColor={ColorTheme.primary}
-        />
-
-        <TouchableOpacity style={styles.photoBox} onPress={takePhoto}>
-          {photo ? (
-            <Image
-              source={{ uri: photo.uri }}
-              style={styles.photo}
-              onError={(error) => console.error('Error loading image:', error)}
-            />
-          ) : (
-            <View style={styles.photoPlaceholder}>
-              <MaterialIcons name="photo-camera" size={40} color={ColorTheme.primary} />
-              <Text style={styles.photoText}>Adicionar foto</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.addButton, (!photo || !location) && { opacity: 0.7 }]}
-          onPress={handleAddPost}
-          disabled={ !location}
-        >
+      <TouchableOpacity
+        style={[styles.addButton, (!photo || !location || isLoading) && { opacity: 0.7 }]}
+        onPress={handleAddPost}
+        disabled={!location || isLoading}
+      >
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
           <Text style={styles.addButtonText}>Adicionar</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+        )}
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+}

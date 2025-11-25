@@ -1,0 +1,41 @@
+src/core/domain/use-cases/post/FindFeedClusters.ts(1,22): error TS2307: Cannot find module '../../domain/entities/Post' or its corresponding type declarations.
+src/core/domain/use-cases/post/FindFeedClusters.ts(2,33): error TS2307: Cannot find module '../../domain/repositories/IPostRepository' or its corresponding type declarations.
+src/core/infra/repositories/MockPostRepository.ts(5,14): error TS2420: Class 'MockPostRepository' incorrectly implements interface 'IPostRepository'.
+  Property 'findClusteredByGeolocation' is missing in type 'MockPostRepository' but required in type 'IPostRepository'.
+src/core/infra/repositories/MockPostRepository.ts(69,12): error TS2540: Cannot assign to 'partiu' because it is a read-only property.
+src/core/infra/repositories/MockUserRepository.ts(7,14): error TS2420: Class 'MockUserRepository' incorrectly implements interface 'IUserRepository'.
+  Type 'MockUserRepository' is missing the following properties from type 'IUserRepository': signUpUser, signInUser, signOut
+src/core/infra/repositories/MockUserRepository.ts(11,10): error TS2554: Expected 5 arguments, but got 4.
+src/core/tests/domain/use-cases/post/CreatePost.test.ts(9,32): error TS2673: Constructor of class 'MockPostRepository' is private and only accessible within the class declaration.
+src/core/tests/domain/use-cases/post/DeletePost.test.ts(8,32): error TS2673: Constructor of class 'MockPostRepository' is private and only accessible within the class declaration.
+src/core/tests/domain/use-cases/post/FindPostByGeolocation.test.ts(8,32): error TS2673: Constructor of class 'MockPostRepository' is private and only accessible within the class declaration.
+src/core/tests/domain/use-cases/post/FindPostByUserId.test.ts(8,32): error TS2673: Constructor of class 'MockPostRepository' is private and only accessible within the class declaration.
+src/core/tests/domain/use-cases/post/FindPosts.test.ts(9,37): error TS2345: Argument of type 'MockPostRepository' is not assignable to parameter of type 'IPostRepository'.
+  Property 'findClusteredByGeolocation' is missing in type 'MockPostRepository' but required in type 'IPostRepository'.
+src/core/tests/domain/use-cases/post/UpdatePost.test.ts(9,32): error TS2673: Constructor of class 'MockPostRepository' is private and only accessible within the class declaration.
+src/core/tests/domain/use-cases/user/FindUserByEmail.test.ts(11,47): error TS2345: Argument of type 'MockUserRepository' is not assignable to parameter of type 'IUserRepository'.
+  Type 'MockUserRepository' is missing the following properties from type 'IUserRepository': signUpUser, signInUser, signOut
+src/core/tests/domain/use-cases/user/LoginUser.test.ts(12,35): error TS2345: Argument of type 'MockUserRepository' is not assignable to parameter of type 'IUserRepository'.
+  Type 'MockUserRepository' is missing the following properties from type 'IUserRepository': signUpUser, signInUser, signOut
+src/core/tests/domain/use-cases/user/LoginUser.test.ts(16,21): error TS2554: Expected 5 arguments, but got 4.
+src/core/tests/domain/use-cases/user/RegisterUser.test.ts(13,43): error TS2345: Argument of type 'MockUserRepository' is not assignable to parameter of type 'IUserRepository'.
+  Type 'MockUserRepository' is missing the following properties from type 'IUserRepository': signUpUser, signInUser, signOut
+src/core/tests/domain/use-cases/user/RegisterUser.test.ts(21,45): error TS2345: Argument of type '{ name: string; email: string; password: string; }' is not assignable to parameter of type '{ name: string; username: string; email: string; password: string; }'.
+  Property 'username' is missing in type '{ name: string; email: string; password: string; }' but required in type '{ name: string; username: string; email: string; password: string; }'.
+src/core/tests/domain/use-cases/user/RegisterUser.test.ts(33,43): error TS2345: Argument of type 'MockUserRepository' is not assignable to parameter of type 'IUserRepository'.
+  Type 'MockUserRepository' is missing the following properties from type 'IUserRepository': signUpUser, signInUser, signOut
+src/core/tests/domain/use-cases/user/RegisterUser.test.ts(35,31): error TS2554: Expected 5 arguments, but got 4.
+src/core/tests/domain/use-cases/user/RegisterUser.test.ts(51,39): error TS2345: Argument of type '{ name: string; email: string; password: string; latitude: number; longitude: number; }' is not assignable to parameter of type '{ name: string; username: string; email: string; password: string; }'.
+  Property 'username' is missing in type '{ name: string; email: string; password: string; latitude: number; longitude: number; }' but required in type '{ name: string; username: string; email: string; password: string; }'.
+src/core/tests/infra/repositories/MockPostRepository.test.ts(49,22): error TS2554: Expected 2 arguments, but got 1.
+src/core/tests/infra/repositories/MockUserRepository.test.ts(17,18): error TS2554: Expected 5 arguments, but got 4.
+src/core/tests/infra/repositories/MockUserRepository.test.ts(18,18): error TS2554: Expected 5 arguments, but got 4.
+src/core/tests/infra/repositories/MockUserRepository.test.ts(40,30): error TS2554: Expected 5 arguments, but got 4.
+src/screens/Camera/index.tsx(23,10): error TS2339: Property 'onPhotoTaken' does not exist on type '{}'.
+src/screens/EditProfile/index.tsx(47,24): error TS18046: 'error' is of type 'unknown'.
+src/screens/EditProfile/index.tsx(61,19): error TS18046: 'error' is of type 'unknown'.
+src/screens/Login/index.tsx(27,24): error TS18046: 'error' is of type 'unknown'.
+src/screens/Login/index.tsx(30,17): error TS2353: Object literal may only specify known properties, and 'duration' does not exist in type 'ToastShowParams'.
+src/screens/Register/index.tsx(42,24): error TS18046: 'error' is of type 'unknown'.
+src/tests/create-post-integration.test.tsx(27,26): error TS7031: Binding element 'navigation' implicitly has an 'any' type.
+src/tests/create-post-integration.test.tsx(44,23): error TS2554: Expected 5 arguments, but got 4.

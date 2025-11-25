@@ -5,6 +5,7 @@ import { Name } from "../../../domain/value-objects/Name";
 import { Email } from "../../../domain/value-objects/Email";
 import { Password } from "../../../domain/value-objects/Password";
 import { GeoCoordinates } from "../../../domain/value-objects/GeoCoordinates";
+import { Username } from "../../../domain/value-objects/Username";
 
 describe("MockUserRepository", () => {
   let repository: MockUserRepository;
@@ -14,8 +15,8 @@ describe("MockUserRepository", () => {
   beforeEach(() => {
     MockUserRepository.reset()
     repository = MockUserRepository.getInstance();
-    user1 = User.create("1", Name.create("User 1"), Email.create("user1@example.com"), Password.create("password123"));
-    user2 = User.create("2", Name.create("User 2"), Email.create("user2@example.com"), Password.create("password456"));
+    user1 = User.create("1", Name.create("User 1"), Username.create("user1"), Email.create("user1@example.com"), Password.create("password123"));
+    user2 = User.create("2", Name.create("User 2"), Username.create("user2"), Email.create("user2@example.com"), Password.create("password456"));
   });
 
   it("should save and find a user by id", async () => {
@@ -37,7 +38,7 @@ describe("MockUserRepository", () => {
 
   it("should update a user", async () => {
     await repository.save(user1);
-    const updatedUser = User.create("1", Name.create("Updated User"), Email.create("user1@example.com"), Password.create("newpassword"));
+    const updatedUser = User.create("1", Name.create("Updated User"), Username.create("updateduser"), Email.create("user1@example.com"), Password.create("newpassword"));
     await repository.update(updatedUser);
     const found = await repository.findById("1");
     expect(found).toEqual(updatedUser);

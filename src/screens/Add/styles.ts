@@ -80,4 +80,21 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
   },
+  toggleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: ColorTheme.primary,
+  },
+  toggleLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: ColorTheme.text,
+  },
 });

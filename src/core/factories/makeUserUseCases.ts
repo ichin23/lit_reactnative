@@ -6,13 +6,14 @@ import { LoginUser } from "../domain/use-cases/user/LoginUser";
 import { LogoutUser } from "../domain/use-cases/user/LogoutUser";
 import { RegisterUser } from "../domain/use-cases/user/RegisterUser";
 import { UpdateUser } from "../domain/use-cases/user/UpdateUser";
+import { SearchUsers } from "../domain/use-cases/user/SearchUsers";
 import { MockUserRepository } from "../infra/repositories/MockUserRepository";
 import { SupabaseUserRepository } from "../infra/repositories/supabaseUserRepository";
 
 
-export function makeUserUseCases(){
+export function makeUserUseCases() {
     const userRepository: IUserRepository = SupabaseUserRepository.getInstance();
-    
+
     const registerUser = new RegisterUser(userRepository);
     const loginUser = new LoginUser(userRepository);
     const updateUser = new UpdateUser(userRepository);
@@ -20,6 +21,7 @@ export function makeUserUseCases(){
     const findUserById = new FindUserById(userRepository);
     const findUserByEmail = new FindUserByEmail(userRepository);
     const logoutUser = new LogoutUser(userRepository);
+    const searchUsers = new SearchUsers(userRepository);
 
     return {
         registerUser,
@@ -28,7 +30,8 @@ export function makeUserUseCases(){
         deleteUser,
         findUserById,
         findUserByEmail,
-        logoutUser
+        logoutUser,
+        searchUsers
     }
 
 }

@@ -8,14 +8,14 @@ import { FindPostByUserId } from "../domain/use-cases/post/FindPostByUserId";
 import { FindPosts } from "../domain/use-cases/post/FindPosts";
 import { UpdatePost } from "../domain/use-cases/post/UpdatePost";
 import { MockPostRepository } from "../infra/repositories/MockPostRepository";
-import { SupabasePostRepository } from "../infra/repositories/supabasePostRepository";
+import { HybridPostRepository } from "../infra/repositories/HybridPostRepository";
 import { AddPartiu } from "../domain/use-cases/post/AddPartiu";
 import { FindFeedClusters } from "../domain/use-cases/post/FindFeedClusters";
+import { GetFriendsFeed } from "../domain/use-cases/post/GetFriendsFeed";
 
+export function makePostUseCases() {
+    const postRepository: IPostRepository = HybridPostRepository.getInstance();
 
-export function makePostUseCases(){
-    const postRepository: IPostRepository = SupabasePostRepository.getInstance();
-    
     const createPost = new CreatePost(postRepository);
     const updatePost = new UpdatePost(postRepository);
     const deletePost = new DeletePost(postRepository);
@@ -26,6 +26,7 @@ export function makePostUseCases(){
     const findPostById = new FindPostById(postRepository);
     const addPartiu = new AddPartiu(postRepository);
     const findFeedClusters = new FindFeedClusters(postRepository);
+    const getFriendsFeed = new GetFriendsFeed(postRepository);
 
     return {
         createPost,
@@ -37,7 +38,8 @@ export function makePostUseCases(){
         findClusteredPostByGeoLocation,
         findPostById,
         addPartiu,
-        findFeedClusters
+        findFeedClusters,
+        getFriendsFeed
     }
-    
+
 }
