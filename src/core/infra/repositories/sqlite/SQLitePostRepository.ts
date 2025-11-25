@@ -17,8 +17,11 @@ export class SQLitePostRepository implements IPostRepository {
     async save(post: Post): Promise<void> {
         // In a real offline scenario, we might want to queue this for sync
         // For now, we just save to the local cache so it appears in the UI
-        // Note: CacheDatabase.savePosts expects an array
-        await CacheDatabase.savePosts([post]);
+        await CacheDatabase.savePost(post);
+    }
+
+    async saveAll(posts: Post[]): Promise<void> {
+        await CacheDatabase.savePosts(posts);
     }
 
     async getAll(sortBy?: 'createdAt' | 'partiu'): Promise<Post[]> {
@@ -52,8 +55,8 @@ export class SQLitePostRepository implements IPostRepository {
         return [];
     }
 
-    async findFriendsClusteredByGeolocation(latitude: number, longitude: number, radius: number, zoom: number): Promise<ClusteredPost[]> {
-        console.warn('Friends clustered search not supported offline');
+    async findFriendsPosts(): Promise<Post[]> {
+        console.warn('Friends posts search not supported offline');
         return [];
     }
 

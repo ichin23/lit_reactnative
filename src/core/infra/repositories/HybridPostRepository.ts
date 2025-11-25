@@ -46,20 +46,16 @@ export class HybridPostRepository implements IPostRepository {
                 const posts = await this.onlineRepo.getAll(sortBy);
                 // Background sync: save fetched posts to offline cache
                 // We don't await this to keep UI responsive
-                this.offlineRepo.save(posts as any).catch(err => console.error('Background cache update failed', err));
+                // Background sync: save fetched posts to offline cache
+                // We don't await this to keep UI responsive
+                if (this.offlineRepo instanceof SQLitePostRepository) {
+                    (this.offlineRepo as SQLitePostRepository).saveAll(posts).catch(err => console.error('Background cache update failed', err));
+                } else {
+                    // Fallback if not SQLitePostRepository (should not happen with current setup)
+                    posts.forEach(p => this.offlineRepo.save(p).catch(() => { }));
+                }
 
-                // Note: SQLitePostRepository.save expects a single Post, but CacheDatabase.savePosts expects array.
-                // We need to fix SQLitePostRepository to handle bulk save or loop here.
-                // Actually, let's check SQLitePostRepository implementation.
-                // It calls CacheDatabase.savePosts([post]).
-                // So we should probably add a saveAll method to IPostRepository or cast to specific type.
-                // For now, let's just loop or use a helper.
-                // Better yet, let's just let the UI be fast and return online data.
-                // But we MUST update cache.
-
-                // Let's use a loop for now as save() takes one post
-                // Optimization: Add saveAll to SQLitePostRepository later
-                posts.forEach(p => this.offlineRepo.save(p).catch(() => { }));
+                return posts;
 
                 return posts;
             } catch (error) {
@@ -105,18 +101,18 @@ export class HybridPostRepository implements IPostRepository {
         return this.offlineRepo.findByGeolocation(latitude, longitude, radius);
     }
 
+    async findFriendsPosts(): Promise<Post[]> {
+        if (await this.isOnline()) {
+            return this.onlineRepo.findFriendsPosts();
+        }
+        return this.offlineRepo.findFriendsPosts();
+    }
+
     async findClusteredByGeolocation(latitude: number, longitude: number, radius: number, zoom: number): Promise<ClusteredPost[]> {
         if (await this.isOnline()) {
             return this.onlineRepo.findClusteredByGeolocation(latitude, longitude, radius, zoom);
         }
         return this.offlineRepo.findClusteredByGeolocation(latitude, longitude, radius, zoom);
-    }
-
-    async findFriendsClusteredByGeolocation(latitude: number, longitude: number, radius: number, zoom: number): Promise<ClusteredPost[]> {
-        if (await this.isOnline()) {
-            return this.onlineRepo.findFriendsClusteredByGeolocation(latitude, longitude, radius, zoom);
-        }
-        return this.offlineRepo.findFriendsClusteredByGeolocation(latitude, longitude, radius, zoom);
     }
 
     async update(id: string, post: Partial<Post>): Promise<void> {

@@ -51,9 +51,10 @@ export class SupabaseUserRepository implements IUserRepository {
             // Try cache first
             const cachedUser = await CacheDatabase.getUser(id);
             if (cachedUser) {
-                console.log(`Returning user ${id} from cache`);
+                console.log(`[SupabaseUserRepository] Cache HIT for user ${id}`);
                 return cachedUser;
             }
+            console.log(`[SupabaseUserRepository] Cache MISS for user ${id}, fetching from Supabase...`);
 
             // Fetch from Supabase
             const { data: profileData, error: profileError } = await supabase

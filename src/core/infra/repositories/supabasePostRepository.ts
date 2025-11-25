@@ -42,11 +42,20 @@ export class SupabasePostRepository implements IPostRepository {
         const response = await query;
 
         if (response.data) {
-            return response.data.map((post: any) => ({
-                ...post,
-                userProfileImgUrl: post.user?.imgUrl,
-                username: post.user?.username
-            })) as Post[];
+            return response.data.map((post: any) => Post.create(
+                post.id,
+                post.title,
+                post.userId,
+                post.user?.name || 'Unknown', // Fallback if name is missing
+                post.user?.imgUrl,
+                post.user?.username,
+                post.partiu,
+                post.imgUrl,
+                post.datetime,
+                post.geolocation,
+                post.only_friends,
+                post.createdAt
+            ));
         }
 
         return [];
@@ -55,11 +64,20 @@ export class SupabasePostRepository implements IPostRepository {
         const response = await supabase.from('post').select('*, user:userId(imgUrl, username)').match({ id }).single();
         if (response.data) {
             const post = response.data as any;
-            return {
-                ...post,
-                userProfileImgUrl: post.user?.imgUrl,
-                username: post.user?.username
-            } as Post;
+            return Post.create(
+                post.id,
+                post.title,
+                post.userId,
+                post.user?.name || 'Unknown',
+                post.user?.imgUrl,
+                post.user?.username,
+                post.partiu,
+                post.imgUrl,
+                post.datetime,
+                post.geolocation,
+                post.only_friends,
+                post.createdAt
+            );
         }
         return undefined;
     }
@@ -67,11 +85,20 @@ export class SupabasePostRepository implements IPostRepository {
         const response = await supabase.from('post').select('*, user:userId(imgUrl, username)').match({ userId });
 
         if (response.data) {
-            return response.data.map((post: any) => ({
-                ...post,
-                userProfileImgUrl: post.user?.imgUrl,
-                username: post.user?.username
-            })) as Post[];
+            return response.data.map((post: any) => Post.create(
+                post.id,
+                post.title,
+                post.userId,
+                post.user?.name || 'Unknown',
+                post.user?.imgUrl,
+                post.user?.username,
+                post.partiu,
+                post.imgUrl,
+                post.datetime,
+                post.geolocation,
+                post.only_friends,
+                post.createdAt
+            ));
         }
 
         return [];
@@ -98,15 +125,51 @@ export class SupabasePostRepository implements IPostRepository {
         return (response.data as ClusteredPost[]) || [];
     }
 
-    async findFriendsClusteredByGeolocation(latitude: number, longitude: number, radius: number, zoom: number): Promise<ClusteredPost[]> {
-        const response = await supabase.rpc('get_friends_feed_clusters_by_location', {
-            center_lat: latitude,
-            center_lon: longitude,
-            radius_meters: radius,
-            zoom_level: zoom
-        })
-        console.log("Find Friends Clustered Geolocation Response: ", response)
-        return (response.data as ClusteredPost[]) || [];
+    async findFriendsPosts(): Promise<Post[]> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            throw new Error("User not authenticated");
+        }
+
+        const { data: followingData, error: followingError } = await supabase
+            .from('follow')
+            .select('following')
+            .eq('user_id', user.id);
+
+        if (followingError) {
+            throw new Error(followingError.message);
+        }
+
+        const followingIds = followingData.map((f: any) => f.following);
+
+        if (followingIds.length === 0) {
+            return [];
+        }
+
+        const response = await supabase
+            .from('post')
+            .select('*, user:userId(imgUrl, username)')
+            .in('userId', followingIds)
+            .order('createdAt', { ascending: false });
+
+        if (response.data) {
+            return response.data.map((post: any) => Post.create(
+                post.id,
+                post.title,
+                post.userId,
+                post.user?.name || 'Unknown',
+                post.user?.imgUrl,
+                post.user?.username,
+                post.partiu,
+                post.imgUrl,
+                post.datetime,
+                post.geolocation,
+                post.only_friends,
+                post.createdAt
+            ));
+        }
+
+        return [];
     }
 
     async update(id: string, post: Partial<Post>): Promise<void> {

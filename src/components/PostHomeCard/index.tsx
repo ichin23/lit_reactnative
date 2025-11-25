@@ -12,7 +12,7 @@ import { MainStackParamList } from "../../navigations/MainStackNavigation";
 
 const { addPartiu } = makePostUseCases();
 
-export function PostHomeCard({ post }: { post: Post }) {
+export function PostHomeCard({ post, containerStyle }: { post: Post, containerStyle?: any }) {
     const { user } = useAuth();
     const { fetchPosts } = usePost();
     const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
@@ -34,7 +34,7 @@ export function PostHomeCard({ post }: { post: Post }) {
     };
 
     return (
-        <View style={styles.card}>
+        <View style={[styles.card, containerStyle]}>
             <Image source={{ uri: post.imgUrl }} style={styles.image} />
             <View style={styles.overlay}>
                 <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={handleProfilePress}>

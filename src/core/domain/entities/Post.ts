@@ -27,8 +27,10 @@ export class Post {
         imgUrl: string,
         datetime: string,
         geolocation: GeoCoordinates,
-        only_friends: boolean = false
+        only_friends: boolean = false,
+        createdAt?: Date | string
     ): Post {
-        return new Post(id, title, userId, userName, userProfileImgUrl, username, partiu, imgUrl, datetime, geolocation, only_friends);
+        const createdAtDate = typeof createdAt === 'string' ? new Date(createdAt) : (createdAt || new Date());
+        return new Post(id, title, userId, userName, userProfileImgUrl, username, partiu, imgUrl, datetime, geolocation, only_friends, createdAtDate);
     }
 }

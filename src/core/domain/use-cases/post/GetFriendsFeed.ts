@@ -1,14 +1,10 @@
-import { ClusteredPost, IPostRepository } from "../../repositories/IPostRepository";
+import { IPostRepository } from "../../repositories/IPostRepository";
+import { Post } from "../../entities/Post";
 
 export class GetFriendsFeed {
     constructor(private postRepository: IPostRepository) { }
 
-    async execute(params: { latitude: number; longitude: number; radius: number; zoom: number }): Promise<ClusteredPost[]> {
-        return await this.postRepository.findFriendsClusteredByGeolocation(
-            params.latitude,
-            params.longitude,
-            params.radius,
-            params.zoom
-        );
+    async execute(): Promise<Post[]> {
+        return await this.postRepository.findFriendsPosts();
     }
 }

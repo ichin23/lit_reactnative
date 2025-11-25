@@ -9,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { makePostUseCases } from "../../core/factories/makePostUseCases";
 import { Post } from "../../core/domain/entities/Post";
 import * as Location from 'expo-location';
+import { PostHomeCard } from "../../components/PostHomeCard";
 
 const { getFriendsFeed } = makePostUseCases();
 
@@ -17,29 +18,15 @@ type FeedType = 'geral' | 'amigos';
 export function HomeScreen({ navigation }: HomeTypes) {
     const { postClusters, fetchPosts } = usePost();
     const [refreshing, setRefreshing] = useState(false);
-    const [feedType, setFeedType] = useState<FeedType>('geral');
-    const [friendsPosts, setFriendsPosts] = useState<Post[][]>([]);
+    const [feedType, setFeedType] = useState<FeedType>('amigos');
+    const [friendsPosts, setFriendsPosts] = useState<Post[]>([]);
     const [loadingFriends, setLoadingFriends] = useState(false);
 
     const fetchFriendsFeed = async () => {
         setLoadingFriends(true);
         try {
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                console.error('Permission to access location was denied');
-                setLoadingFriends(false);
-                return;
-            }
-
-            const currentLocation = await Location.getCurrentPositionAsync({});
-            const clusters = await getFriendsFeed.execute({
-                latitude: currentLocation.coords.latitude,
-                longitude: currentLocation.coords.longitude,
-                radius: 100000,
-                zoom: 10
-            });
-
-            setFriendsPosts(clusters.map(cluster => cluster.posts));
+            const posts = await getFriendsFeed.execute();
+            setFriendsPosts(posts);
         } catch (error) {
             console.error("Failed to fetch friends feed:", error);
         } finally {
@@ -69,14 +56,6 @@ export function HomeScreen({ navigation }: HomeTypes) {
     return <View style={styles.container}>
         <View style={styles.feedToggle}>
             <TouchableOpacity
-                style={[styles.feedButton, feedType === 'geral' && styles.feedButtonActive]}
-                onPress={() => setFeedType('geral')}
-            >
-                <Text style={[styles.feedButtonText, feedType === 'geral' && styles.feedButtonTextActive]}>
-                    Geral
-                </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
                 style={[styles.feedButton, feedType === 'amigos' && styles.feedButtonActive]}
                 onPress={() => setFeedType('amigos')}
             >
@@ -84,16 +63,29 @@ export function HomeScreen({ navigation }: HomeTypes) {
                     Amigos
                 </Text>
             </TouchableOpacity>
+            <TouchableOpacity
+                style={[styles.feedButton, feedType === 'geral' && styles.feedButtonActive]}
+                onPress={() => setFeedType('geral')}
+            >
+                <Text style={[styles.feedButtonText, feedType === 'geral' && styles.feedButtonTextActive]}>
+                    Geral
+                </Text>
+            </TouchableOpacity>
         </View>
         <FlatList
-            data={displayPosts}
+            data={displayPosts as any}
             refreshControl={
                 <RefreshControl refreshing={refreshing || loadingFriends} onRefresh={onRefresh} />
             }
             style={{ width: '100%', padding: 10 }}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
-                <PostCarousel posts={item} />
+                feedType === 'amigos' ?
+                    <View style={{ marginBottom: 15 }}>
+                        <PostHomeCard post={item as Post} containerStyle={{ width: '98%' }} />
+                    </View>
+                    :
+                    <PostCarousel posts={item as Post[]} />
             )}
             ListEmptyComponent={() => (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 50 }}>

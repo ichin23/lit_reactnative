@@ -202,10 +202,6 @@ export function ExplorarScreen() {
                             </Marker>
                         ))}
                     </MapView>
-
-                    <TouchableOpacity style={styles.refreshButton} onPress={handleLocationAndPosts}>
-                        <MaterialIcons name="refresh" size={24} color="black" />
-                    </TouchableOpacity>
                 </>
             )}
 

@@ -13,7 +13,7 @@ export interface IPostRepository {
     findByUserId(userId: string): Promise<Post[]>;
     findByGeolocation(latitude: number, longitude: number, radius: number): Promise<Post[]>;
     findClusteredByGeolocation(latitude: number, longitude: number, radius: number, zoom: number): Promise<ClusteredPost[]>;
-    findFriendsClusteredByGeolocation(latitude: number, longitude: number, radius: number, zoom: number): Promise<ClusteredPost[]>;
+    findFriendsPosts(): Promise<Post[]>;
     update(id: string, post: Partial<Post>): Promise<void>;
     delete(id: string): Promise<void>;
     addPartiu(postId: string, userId: string): Promise<void>;
