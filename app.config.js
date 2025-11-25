@@ -4,7 +4,7 @@ export default {
   "expo": {
     "name": "Lit",
     "slug": "lit_reactnative",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -67,7 +67,8 @@ export default {
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "extra": {
       "eas": {

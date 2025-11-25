@@ -12,13 +12,17 @@ import * as MediaLibrary from "expo-media-library"
 import { CameraCapturedPicture } from "expo-camera";
 import { MapScreen } from "../screens/Map";
 import { GeoCoordinates } from "../core/domain/value-objects/GeoCoordinates";
+import { PublicProfileScreen } from "../screens/PublicProfile";
+import { FollowRequestsScreen } from "../screens/FollowRequests";
 
 export type MainStackParamList = {
     MainStack: undefined,
     Add: undefined,
     Camera: { onPhotoTaken: (photo: CameraCapturedPicture) => void } | undefined,
     EditProfile: undefined,
-    Map: { destination: GeoCoordinates, locationName: string }
+    Map: { destination: GeoCoordinates, locationName: string },
+    PublicProfile: { userId: string },
+    FollowRequests: undefined
 };
 
 const MainStack = createNativeStackNavigator<MainStackParamList>({
@@ -27,7 +31,9 @@ const MainStack = createNativeStackNavigator<MainStackParamList>({
         Add: AddScreen,
         Camera: CameraScreen,
         EditProfile: EditProfileScreen,
-        Map: MapScreen
+        Map: MapScreen,
+        PublicProfile: PublicProfileScreen,
+        FollowRequests: FollowRequestsScreen
     }
 });
 
@@ -53,7 +59,7 @@ export function MainStackNavigation() {
             <MainStack.Screen
                 name="Camera"
                 component={CameraScreen}
-                options={{ headerShown: false, animation: 'slide_from_right' }}
+                options={{ headerShown: false, animation: 'slide_from_bottom' }}
             />
             <MainStack.Screen
                 name="EditProfile"
@@ -63,6 +69,16 @@ export function MainStackNavigation() {
             <MainStack.Screen
                 name="Map"
                 component={MapScreen}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
+            />
+            <MainStack.Screen
+                name="PublicProfile"
+                component={PublicProfileScreen}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
+            />
+            <MainStack.Screen
+                name="FollowRequests"
+                component={FollowRequestsScreen}
                 options={{ headerShown: false, animation: 'slide_from_right' }}
             />
         </MainStack.Navigator>

@@ -11,13 +11,19 @@ import { supabase } from './src/core/infra/supabase/client/supabaseClient';
 import { testSupabaseConnection } from './src/utils/testSupabase';
 import * as Updates from 'expo-updates'
 import { UpdateScreen } from './src/screens/Update';
+import { FollowRequestProvider } from './src/context/followRequest';
+import { CacheDatabase } from './src/core/infra/db/CacheDatabase';
+
 
 function App() {
   const [isUpdateAvailable, setIsUpdateAvailable] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
-  
+
   useEffect(() => {
-    testSupabaseConnection()
+    // Initialize cache database
+    CacheDatabase.init().catch(err => console.error('Failed to init cache:', err));
+
+    // testSupabaseConnection()
     const subscription = Linking.addEventListener("url", async ({ url }) => {
       const { data, error } = await supabase.auth.exchangeCodeForSession(url);
       console.log(data, error);
@@ -28,41 +34,45 @@ function App() {
       if (url) supabase.auth.exchangeCodeForSession(url);
     });
 
+    checkForUpdates()
+    CacheDatabase.getPosts().then(posts => console.log("Posts cached: ", posts))
+
     return () => subscription.remove();
 
-    checkForUpdates()
   }, []);
 
-  async function checkForUpdates(){
-    try{
+  async function checkForUpdates() {
+    try {
       setIsChecking(true)
       const update = await Updates.checkForUpdateAsync();
-      if(update.isAvailable){
+      if (update.isAvailable) {
         setIsUpdateAvailable(true)
         console.log('Update disponíivel')
       }
-    }catch(error){
+    } catch (error) {
       console.log("erro ao verificar update")
-    }finally{
+    } finally {
       setIsChecking(false)
     }
   }
 
-  async function downloadAndReload(){
-    try{
+  async function downloadAndReload() {
+    try {
       await Updates.fetchUpdateAsync()
       await Updates.reloadAsync()
-    }catch(error){
+    } catch (error) {
       console.error("Erro ao baixar update", error)
     }
   }
 
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
-      {isUpdateAvailable ? <UpdateScreen onUpdate={downloadAndReload}/> :
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      {isUpdateAvailable ? <UpdateScreen onUpdate={downloadAndReload} /> :
         <AuthProvider>
           <PostProvider>
-            <Navigation />
+            <FollowRequestProvider>
+              <Navigation />
+            </FollowRequestProvider>
           </PostProvider>
           <Toast />
         </AuthProvider>
@@ -72,3 +82,4 @@ function App() {
 }
 
 export default App;
+

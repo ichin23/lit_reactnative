@@ -37,39 +37,54 @@ export function EditProfileScreen({ navigation }: HomeTypes) {
     }, [user]);
 
     const pickImage = async () => {
-        setModalVisible(false);
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (permissionResult.granted === false) {
+            alert("É necessário permitir o acesso à galeria!");
+            return;
         }
-    };
 
-    const takePhoto = async () => {
         setModalVisible(false);
-        try {
-            const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-            if (permissionResult.granted === false) {
-                alert("You've refused to allow this app to access your camera!");
-                return;
-            }
-            const result = await ImagePicker.launchCameraAsync({
+
+        // Delay to allow modal to close animation to finish on iOS
+        setTimeout(async () => {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [1, 1],
                 quality: 1,
             });
+
             if (!result.canceled) {
                 setImage(result.assets[0].uri);
             }
-        } catch (error) {
-            console.error("Error taking photo:", error);
-            Alert.alert("Erro", "Não foi possível abrir a câmera.");
+        }, 500);
+    };
+
+    const takePhoto = async () => {
+        const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+        if (permissionResult.granted === false) {
+            alert("É necessário permitir o acesso à câmera!");
+            return;
         }
+
+        setModalVisible(false);
+
+        // Delay to allow modal to close animation to finish on iOS
+        setTimeout(async () => {
+            try {
+                const result = await ImagePicker.launchCameraAsync({
+                    allowsEditing: true,
+                    aspect: [1, 1],
+                    quality: 1,
+                });
+                if (!result.canceled) {
+                    setImage(result.assets[0].uri);
+                }
+            } catch (error) {
+                console.error("Error taking photo:", error);
+                Alert.alert("Erro", "Não foi possível abrir a câmera.");
+            }
+        }, 500);
     };
 
     const uploadImage = async () => {

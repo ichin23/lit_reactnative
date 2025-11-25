@@ -5,6 +5,7 @@ import { Name } from "../../domain/value-objects/Name";
 import { Password } from "../../domain/value-objects/Password";
 import { Username } from "../../domain/value-objects/Username";
 import { supabase } from "../supabase/client/supabaseClient";
+import { CacheDatabase } from "../db/CacheDatabase";
 
 export class SupabaseUserRepository implements IUserRepository {
     private static instance: SupabaseUserRepository;
@@ -44,30 +45,53 @@ export class SupabaseUserRepository implements IUserRepository {
             profileData.imgUrl
         );
     }
+
     async findById(id: string): Promise<User | null> {
+        try {
+            // Try cache first
+            const cachedUser = await CacheDatabase.getUser(id);
+            if (cachedUser) {
+                console.log(`Returning user ${id} from cache`);
+                return cachedUser;
+            }
 
+            // Fetch from Supabase
+            const { data: profileData, error: profileError } = await supabase
+                .from('user')
+                .select('*')
+                .eq('id', id)
+                .single();
 
-        const { data: profileData, error: profileError } = await supabase
-            .from('user')
-            .select('*')
-            .eq('id', id)
-            .single();
+            if (profileError && profileError.code !== 'PGRST116') {
+                throw new Error(profileError.message);
+            }
+            if (!profileData) {
+                return null;
+            }
 
-        if (profileError && profileError.code !== 'PGRST116') { // PGRST116: "The result contains 0 rows"
-            throw new Error(profileError.message);
+            const user = User.create(
+                profileData.id,
+                Name.create(profileData.name),
+                Username.create(profileData.username),
+                Email.create(profileData.email),
+                Password.create('hashed_123'),
+                profileData.imgUrl
+            );
+
+            // Save to cache
+            await CacheDatabase.saveUser(user);
+
+            return user;
+        } catch (error) {
+            console.error('Error in findById:', error);
+            // Fallback to cache (try one last time, but don't throw)
+            try {
+                return await CacheDatabase.getUser(id);
+            } catch (cacheError) {
+                console.error('Critical error: Cache fallback failed:', cacheError);
+                return null;
+            }
         }
-        if (!profileData) {
-            return null;
-        }
-
-        return User.create(
-            profileData.id,
-            Name.create(profileData.name),
-            Username.create(profileData.username),
-            Email.create(profileData.email),
-            Password.create('hashed_123'), // Password is not stored in the entity
-            profileData.imgUrl
-        );
     }
 
     async update(user: User): Promise<void> {
@@ -167,5 +191,25 @@ export class SupabaseUserRepository implements IUserRepository {
         if (authError) {
             throw new Error(authError.message);
         }
+    }
+
+    async searchByUsername(query: string): Promise<User[]> {
+        const { data, error } = await supabase
+            .from('user')
+            .select('*')
+            .ilike('name', `%${query}%`);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        return data.map(profileData => User.create(
+            profileData.id,
+            Name.create(profileData.name),
+            Username.create(profileData.username),
+            Email.create(profileData.email),
+            Password.create('hashed_123'),
+            profileData.imgUrl
+        ));
     }
 }

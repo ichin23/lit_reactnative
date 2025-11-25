@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, FlatList, Alert, Modal, TextInput, TouchableWithoutFeedback } from "react-native";
+import { View, Text, Image, TouchableOpacity, FlatList, Alert, Modal, TextInput, TouchableWithoutFeedback, Switch } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useAuth } from "../../context/auth";
 import { styles } from "./styles";
@@ -28,7 +28,8 @@ export function PerfilScreen({ navigation }: HomeTypes) {
     const fetchUserPosts = useCallback(async () => {
         if (user) {
             const posts = await findPostByUserId.execute({ userId: user.id });
-            setUserPosts(posts);
+            const sortedPosts = posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            setUserPosts(sortedPosts);
         }
     }, [user]);
 
@@ -135,6 +136,45 @@ export function PerfilScreen({ navigation }: HomeTypes) {
                                     <MaterialIcons name="edit" size={24} color="#333" />
                                     <Text style={styles.modalOptionText}>Editar</Text>
                                 </TouchableOpacity>
+                                <View style={[styles.modalOption, { justifyContent: 'space-between' }]}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <MaterialIcons
+                                            name={selectedPost?.only_friends ? "people" : "public"}
+                                            size={24}
+                                            color={selectedPost?.only_friends ? "#007AFF" : "#666"}
+                                        />
+                                        <Text style={[styles.modalOptionText, { color: selectedPost?.only_friends ? '#007AFF' : '#333' }]}>
+                                            {selectedPost?.only_friends ? "Apenas amigos" : "Público"}
+                                        </Text>
+                                    </View>
+                                    <Switch
+                                        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                                        thumbColor={selectedPost?.only_friends ? "#007AFF" : "#f4f3f4"}
+                                        ios_backgroundColor="#3e3e3e"
+                                        onValueChange={async (value) => {
+                                            if (selectedPost) {
+                                                const previousState = selectedPost.only_friends;
+                                                // Optimistic update
+                                                setSelectedPost({ ...selectedPost, only_friends: value });
+
+                                                try {
+                                                    await updatePost.execute({
+                                                        id: selectedPost.id,
+                                                        only_friends: value
+                                                    });
+                                                    // Update lists silently
+                                                    fetchUserPosts();
+                                                    fetchPosts();
+                                                } catch (error) {
+                                                    // Revert on error
+                                                    setSelectedPost({ ...selectedPost, only_friends: previousState });
+                                                    Alert.alert("Erro", "Não foi possível atualizar a privacidade do post.");
+                                                }
+                                            }
+                                        }}
+                                        value={selectedPost?.only_friends}
+                                    />
+                                </View>
                                 <TouchableOpacity style={styles.modalOption} onPress={() => {
                                     if (selectedPost) {
                                         handleDeletePost(selectedPost.id);

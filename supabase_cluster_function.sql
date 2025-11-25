@@ -154,6 +154,8 @@ BEGIN
             public.post p
         LEFT JOIN
             public.user u ON p."userId" = u.id
+        WHERE
+            (p.only_friends IS NULL OR p.only_friends = false)
     ),
     grouped_clusters AS (
         SELECT
@@ -170,6 +172,7 @@ BEGIN
                     'userProfileImgUrl', "userProfileImgUrl",
                     'username', username
                 )
+                ORDER BY "createdAt" DESC
             ) AS posts,
             MAX("createdAt") as max_created_at
         FROM
@@ -219,6 +222,7 @@ BEGIN
         WHERE 
             p.geolocation->>'latitude' IS NOT NULL
         AND p.geolocation->>'longitude' IS NOT NULL
+        AND (p.only_friends IS NULL OR p.only_friends = false)
         AND ST_DWithin(
             ST_Transform(
                 ST_SetSRID(
@@ -279,6 +283,7 @@ BEGIN
                     'userProfileImgUrl', "userProfileImgUrl",
                     'username', username
                 )
+                ORDER BY "createdAt" DESC
             ) AS posts,
             MAX("createdAt") AS max_created_at
         FROM clustered_posts

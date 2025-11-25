@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Switch } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import ColorTheme from "../../styles/colors";
 import { styles } from "./styles";
@@ -36,6 +36,8 @@ export default function AddScreen({ navigation }: HomeTypes) {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [onlyFriends, setOnlyFriends] = useState(false);
+
 
   useEffect(() => {
 
@@ -169,7 +171,8 @@ export default function AddScreen({ navigation }: HomeTypes) {
         geolocation: GeoCoordinates.create(location.coords.latitude, location.coords.longitude),
         imgUrl: imageUrl,
         datetime: new Date().toString(),
-        title: title
+        title: title,
+        only_friends: onlyFriends
       });
 
       await fetchPosts();
@@ -235,7 +238,18 @@ export default function AddScreen({ navigation }: HomeTypes) {
         onChangeText={setTitle}
         placeholder="Digite o Título"
         placeholderTextColor={ColorTheme.primary}
+        maxLength={30}
       />
+
+      <View style={styles.toggleContainer}>
+        <Text style={styles.toggleLabel}>Apenas amigos</Text>
+        <Switch
+          value={onlyFriends}
+          onValueChange={setOnlyFriends}
+          trackColor={{ false: "#d1d5db", true: ColorTheme.primary }}
+          thumbColor={onlyFriends ? "#fff" : "#f4f3f4"}
+        />
+      </View>
 
       <TouchableOpacity style={styles.photoBox} onPress={() => navigation.navigate("Camera", { onPhotoTaken: (asset: CameraCapturedPicture) => { console.log(asset.base64); if (asset.base64) setPhoto(asset) } })}>
         {photo ? (

@@ -21,14 +21,15 @@ export class SupabasePostRepository implements IPostRepository {
             title: post.title,
             imgUrl: post.imgUrl,
             geolocation: post.geolocation,
+            only_friends: post.only_friends,
         }).select()
 
         console.log("response supabase: ", response)
         if (response.error) {
             throw Error(response.error.message)
         }
-
     }
+
     async getAll(sortBy?: 'createdAt' | 'partiu'): Promise<Post[]> {
         let query = supabase.from('post').select('*, user:userId(imgUrl, username)');
 
@@ -39,7 +40,7 @@ export class SupabasePostRepository implements IPostRepository {
         }
 
         const response = await query;
-        console.log(response)
+
         if (response.data) {
             return response.data.map((post: any) => ({
                 ...post,
@@ -47,6 +48,7 @@ export class SupabasePostRepository implements IPostRepository {
                 username: post.user?.username
             })) as Post[];
         }
+
         return [];
     }
     async findById(id: string): Promise<Post | undefined> {
@@ -63,6 +65,7 @@ export class SupabasePostRepository implements IPostRepository {
     }
     async findByUserId(userId: string): Promise<Post[]> {
         const response = await supabase.from('post').select('*, user:userId(imgUrl, username)').match({ userId });
+
         if (response.data) {
             return response.data.map((post: any) => ({
                 ...post,
@@ -70,6 +73,7 @@ export class SupabasePostRepository implements IPostRepository {
                 username: post.user?.username
             })) as Post[];
         }
+
         return [];
     }
     async findByGeolocation(latitude: number, longitude: number, radius: number): Promise<Post[]> {
@@ -93,6 +97,18 @@ export class SupabasePostRepository implements IPostRepository {
         console.log("Find Clustered Geolocation Response: ", response)
         return (response.data as ClusteredPost[]) || [];
     }
+
+    async findFriendsClusteredByGeolocation(latitude: number, longitude: number, radius: number, zoom: number): Promise<ClusteredPost[]> {
+        const response = await supabase.rpc('get_friends_feed_clusters_by_location', {
+            center_lat: latitude,
+            center_lon: longitude,
+            radius_meters: radius,
+            zoom_level: zoom
+        })
+        console.log("Find Friends Clustered Geolocation Response: ", response)
+        return (response.data as ClusteredPost[]) || [];
+    }
+
     async update(id: string, post: Partial<Post>): Promise<void> {
         await supabase.from('post').update(post).match({ id });
     }
@@ -125,5 +141,4 @@ export class SupabasePostRepository implements IPostRepository {
         console.log(data)
         return data.map((cluster: any) => cluster.posts);
     }
-
 }

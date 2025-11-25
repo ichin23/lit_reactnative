@@ -12,9 +12,10 @@ export class CreatePost {
         userName: string,
         imgUrl: string,
         datetime: string,
-        geolocation: GeoCoordinates
+        geolocation: GeoCoordinates,
+        only_friends?: boolean
     }): Promise<Post> {
-        const { title, userId, userName, imgUrl, datetime, geolocation } = params;
+        const { title, userId, userName, imgUrl, datetime, geolocation, only_friends = false } = params;
 
         const post = Post.create(
             Math.random().toString(),
@@ -26,11 +27,13 @@ export class CreatePost {
             0,
             imgUrl,
             datetime,
-            geolocation
+            geolocation,
+            only_friends
         );
 
         await this.postRepository.save(post);
         return post;
     }
+
 
 }

@@ -53,15 +53,20 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         padding: 12,
         backgroundColor: "#fff",
+        minHeight: 50,
     },
     locationRow: {
         flexDirection: "row",
         alignItems: "center",
+        flex: 1,
+        marginRight: 8,
     },
     location: {
         color: "#c00",
         marginLeft: 4,
         fontSize: 16,
+        flexShrink: 1,
+        flexWrap: "wrap",
     },
     button: {
         flexDirection: "row",

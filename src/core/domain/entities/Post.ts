@@ -12,6 +12,7 @@ export class Post {
         readonly imgUrl: string,
         readonly datetime: string,
         readonly geolocation: GeoCoordinates,
+        readonly only_friends: boolean = false,
         readonly createdAt: Date = new Date(),
     ) { }
 
@@ -25,8 +26,9 @@ export class Post {
         partiu: number = 0,
         imgUrl: string,
         datetime: string,
-        geolocation: GeoCoordinates
+        geolocation: GeoCoordinates,
+        only_friends: boolean = false
     ): Post {
-        return new Post(id, title, userId, userName, userProfileImgUrl, username, partiu, imgUrl, datetime, geolocation);
+        return new Post(id, title, userId, userName, userProfileImgUrl, username, partiu, imgUrl, datetime, geolocation, only_friends);
     }
 }
