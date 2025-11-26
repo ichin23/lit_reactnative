@@ -7,7 +7,7 @@ export type ClusteredPost = {
 
 
 export interface IPostRepository {
-    save(post: Post): Promise<void>;
+    save(post: Post, syncStatus?: 'synced' | 'pending'): Promise<Post>;
     getAll(sortBy?: 'createdAt' | 'partiu'): Promise<Post[]>;
     findById(id: string): Promise<Post | undefined>;
     findByUserId(userId: string): Promise<Post[]>;

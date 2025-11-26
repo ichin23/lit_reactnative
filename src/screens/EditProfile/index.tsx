@@ -14,6 +14,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { supabase } from "../../core/infra/supabase/client/supabaseClient";
 import { decode } from 'base64-arraybuffer';
 import { MaterialIcons } from "@expo/vector-icons";
+import { ImageUploadService } from "../../core/services/ImageUploadService";
 
 export function EditProfileScreen({ navigation }: HomeTypes) {
     const { user, logout, update, deleteUser } = useAuth();
@@ -92,44 +93,16 @@ export function EditProfileScreen({ navigation }: HomeTypes) {
 
         setUploading(true);
         try {
-            const base64 = await new Promise<string>((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                xhr.onload = function () {
-                    const reader = new FileReader();
-                    reader.onloadend = function () {
-                        resolve(reader.result as string);
-                    };
-                    reader.readAsDataURL(xhr.response);
-                };
-                xhr.onerror = function (e) {
-                    console.log(e);
-                    reject(new TypeError("Network request failed"));
-                };
-                xhr.responseType = "blob";
-                xhr.open("GET", image, true);
-                xhr.send(null);
-            });
-
-            // Extract base64 data
-            const base64Data = base64.split(',')[1];
-
             const fileName = `${user!.id}/${Date.now()}.jpg`;
-            const { data, error } = await supabase.storage
-                .from('fotoPerfil')
-                .upload(fileName, decode(base64Data), {
-                    contentType: 'image/jpeg',
-                    upsert: true
-                });
 
-            if (error) {
-                throw error;
-            }
+            const publicUrl = await ImageUploadService.uploadImage(
+                { uri: image },
+                'fotoPerfil',
+                fileName,
+                { upsert: true }
+            );
 
-            const { data: publicUrlData } = supabase.storage
-                .from('fotoPerfil')
-                .getPublicUrl(fileName);
-
-            return publicUrlData.publicUrl;
+            return publicUrl;
         } catch (error) {
             console.error("Error uploading image: ", error);
             throw error;

@@ -14,14 +14,23 @@ export class SQLitePostRepository implements IPostRepository {
         return SQLitePostRepository.instance;
     }
 
-    async save(post: Post): Promise<void> {
+    async save(post: Post, syncStatus: 'synced' | 'pending' = 'synced'): Promise<Post> {
         // In a real offline scenario, we might want to queue this for sync
         // For now, we just save to the local cache so it appears in the UI
-        await CacheDatabase.savePost(post);
+        await CacheDatabase.savePost(post, syncStatus);
+        return post;
+    }
+
+    async getPendingPosts(): Promise<Post[]> {
+        return await CacheDatabase.getPendingPosts();
     }
 
     async saveAll(posts: Post[]): Promise<void> {
         await CacheDatabase.savePosts(posts);
+    }
+
+    async replaceSyncedPosts(posts: Post[]): Promise<void> {
+        await CacheDatabase.syncCacheWithOnlinePosts(posts);
     }
 
     async getAll(sortBy?: 'createdAt' | 'partiu'): Promise<Post[]> {
@@ -85,9 +94,7 @@ export class SQLitePostRepository implements IPostRepository {
     }
 
     async delete(id: string): Promise<void> {
-        // CacheDatabase doesn't have delete yet
-        // TODO: Implement delete in CacheDatabase
-        console.warn('Offline delete not implemented yet');
+        await CacheDatabase.deletePost(id);
     }
 
     async addPartiu(postId: string, userId: string): Promise<void> {

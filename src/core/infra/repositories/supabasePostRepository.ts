@@ -15,19 +15,35 @@ export class SupabasePostRepository implements IPostRepository {
         return SupabasePostRepository.instance;
     }
 
-    async save(post: Post): Promise<void> {
+    async save(post: Post, syncStatus?: 'synced' | 'pending'): Promise<Post> {
         console.log("Enviando supabase: ", post)
         const response = await supabase.from('post').insert({
             title: post.title,
             imgUrl: post.imgUrl,
             geolocation: post.geolocation,
             only_friends: post.only_friends,
-        }).select()
+        }).select().single()
 
         console.log("response supabase: ", response)
         if (response.error) {
             throw Error(response.error.message)
         }
+
+        const newPostData = response.data;
+        return Post.create(
+            newPostData.id,
+            newPostData.title,
+            post.userId, // We might need to fetch user info if not returned, but for now reuse input
+            post.userName,
+            post.userProfileImgUrl,
+            post.username,
+            newPostData.partiu,
+            newPostData.imgUrl,
+            newPostData.datetime,
+            newPostData.geolocation,
+            newPostData.only_friends,
+            newPostData.createdAt
+        );
     }
 
     async getAll(sortBy?: 'createdAt' | 'partiu'): Promise<Post[]> {

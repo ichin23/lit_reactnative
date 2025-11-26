@@ -66,9 +66,17 @@ export class CacheDatabase {
                 geolocation_lng REAL,
                 only_friends INTEGER DEFAULT 0,
                 createdAt TEXT,
-                cachedAt TEXT NOT NULL
+                cachedAt TEXT NOT NULL,
+                syncStatus TEXT DEFAULT 'synced'
             );
         `);
+
+        // Try to add syncStatus column if it doesn't exist (migration)
+        try {
+            await this.db.execAsync('ALTER TABLE cached_posts ADD COLUMN syncStatus TEXT DEFAULT "synced"');
+        } catch (e) {
+            // Column likely exists
+        }
 
         // Create cached_users table
         await this.db.execAsync(`
@@ -96,7 +104,7 @@ export class CacheDatabase {
 
     // ==================== POST CACHE METHODS ====================
 
-    static async savePost(post: Post): Promise<void> {
+    static async savePost(post: Post, syncStatus: 'synced' | 'pending' = 'synced'): Promise<void> {
         try {
             await this.init();
             const now = new Date().toISOString();
@@ -104,8 +112,8 @@ export class CacheDatabase {
             await this.db.runAsync(
                 `INSERT OR REPLACE INTO cached_posts 
                 (id, title, userId, authorName, userProfileImgUrl, username, partiu, imgUrl, datetime, 
-                 geolocation_lat, geolocation_lng, only_friends, createdAt, cachedAt) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                 geolocation_lat, geolocation_lng, only_friends, createdAt, cachedAt, syncStatus) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     post.id,
                     post.title,
@@ -120,7 +128,8 @@ export class CacheDatabase {
                     post.geolocation.longitude,
                     post.only_friends ? 1 : 0,
                     (post.createdAt instanceof Date ? post.createdAt : new Date(post.createdAt)).toISOString(),
-                    now
+                    now,
+                    syncStatus
                 ]
             );
 
@@ -128,6 +137,42 @@ export class CacheDatabase {
             await this.updateCacheMetadata('posts');
         } catch (error) {
             console.error('Error saving post to cache:', error);
+        }
+    }
+
+    static async getPendingPosts(): Promise<Post[]> {
+        try {
+            await this.init();
+            const results = await this.db.getAllAsync(
+                `SELECT * FROM cached_posts WHERE syncStatus = 'pending' ORDER BY createdAt ASC`
+            );
+
+            return results.map((row: any) => Post.create(
+                row.id,
+                row.title,
+                row.userId,
+                row.authorName,
+                row.userProfileImgUrl,
+                row.username,
+                row.partiu,
+                row.imgUrl,
+                row.datetime,
+                GeoCoordinates.create(row.geolocation_lat, row.geolocation_lng),
+                row.only_friends === 1,
+                row.createdAt
+            ));
+        } catch (error) {
+            console.error('Error getting pending posts:', error);
+            return [];
+        }
+    }
+
+    static async deletePost(id: string): Promise<void> {
+        try {
+            await this.init();
+            await this.db.runAsync('DELETE FROM cached_posts WHERE id = ?', [id]);
+        } catch (error) {
+            console.error('Error deleting post from cache:', error);
         }
     }
 
@@ -145,8 +190,8 @@ export class CacheDatabase {
                 await this.db.runAsync(
                     `INSERT OR REPLACE INTO cached_posts 
                     (id, title, userId, authorName, userProfileImgUrl, username, partiu, imgUrl, datetime, 
-                     geolocation_lat, geolocation_lng, only_friends, createdAt, cachedAt) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                     geolocation_lat, geolocation_lng, only_friends, createdAt, cachedAt, syncStatus) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced')`,
                     [
                         post.id,
                         post.title,
@@ -188,6 +233,22 @@ export class CacheDatabase {
             console.log(`Replaced cache with ${posts.length} posts`);
         } catch (error) {
             console.error('Error replacing posts cache:', error);
+        }
+    }
+
+    static async syncCacheWithOnlinePosts(posts: Post[]): Promise<void> {
+        try {
+            await this.init();
+
+            // Delete all currently synced posts (preserving pending ones)
+            await this.db.runAsync("DELETE FROM cached_posts WHERE syncStatus = 'synced'");
+
+            // Insert new posts
+            await this.savePosts(posts);
+
+            console.log(`Synced cache with ${posts.length} online posts`);
+        } catch (error) {
+            console.error('Error syncing cache with online posts:', error);
         }
     }
 

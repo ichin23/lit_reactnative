@@ -8,6 +8,7 @@ import * as MediaLibrary from 'expo-media-library'
 import * as Location from 'expo-location';
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as ImagePicker from 'expo-image-picker';
+
 import { useAuth } from "../../context/auth";
 import { makePostUseCases } from "../../core/factories/makePostUseCases";
 import { Post } from "../../core/domain/entities/Post";
@@ -20,6 +21,7 @@ import { supabase } from "../../core/infra/supabase/client/supabaseClient";
 import { CameraCapturedPicture } from "expo-camera";
 import { decode } from 'base64-arraybuffer'
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ImageUploadService } from "../../core/services/ImageUploadService";
 
 
 const { createPost } = makePostUseCases();
@@ -88,45 +90,7 @@ export default function AddScreen({ navigation }: HomeTypes) {
     }
   }
 
-  const uploadPhotoAndGetUrl = async (): Promise<string> => {
-    try {
-      if (!user) throw new Error("User not authenticated")
-      if (!photo) throw new Error("Take a picture first")
 
-      const fileExt = photo.uri.split(".").pop();
-      const fileName = `${user.id}_${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      // console.log("path: ", filePath)
-      // const formData = new FormData();
-      // formData.append('file', {
-      //   uri: photo.uri,
-      //   name: photo.fileName || `photo_${Date.now()}.jpg`, // Tenta pegar o nome, senão gera um
-      //   type: photo.mimeType ?? 'image/jpeg', // Tenta pegar o tipo, senão usa um padrão
-      // } as unknown as Blob);
-
-      const { error: uploadError } = await supabase.storage
-        .from('lit-photos')
-        .upload(`${filePath}`, decode(photo.base64!), {
-          contentType: 'image/jpeg'
-        });
-
-      if (uploadError) {
-        throw new Error('Falha ao fazer upload da imagem');
-      }
-
-      const { data: urlData } = supabase.storage
-        .from("lit-photos")
-        .getPublicUrl(filePath)
-
-      if (!urlData?.publicUrl) {
-        throw new Error('Falha ao obter URL pública da imagem');
-      }
-      return urlData.publicUrl;
-    } catch (error) {
-      throw error;
-    }
-  }
 
   const handleAddPost = async () => {
     try {
@@ -164,12 +128,20 @@ export default function AddScreen({ navigation }: HomeTypes) {
         return;
       }
 
-      const imageUrl = await uploadPhotoAndGetUrl();
+      const fileExt = photo.uri.split(".").pop();
+      const fileName = `${user.id}_${Date.now()}.${fileExt}`;
+
+      // Save to gallery for offline support
+      const asset = await MediaLibrary.createAssetAsync(photo.uri);
+      const localUri = asset.uri;
+
+      // Pass local URI to createPost
+      // The repository will handle upload if online, or save local URI if offline
       await createPost.execute({
         userId: user.id,
         userName: user.name.value,
         geolocation: GeoCoordinates.create(location.coords.latitude, location.coords.longitude),
-        imgUrl: imageUrl,
+        imgUrl: localUri,
         datetime: new Date().toString(),
         title: title,
         only_friends: onlyFriends

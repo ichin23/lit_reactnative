@@ -13,6 +13,7 @@ import * as Updates from 'expo-updates'
 import { UpdateScreen } from './src/screens/Update';
 import { FollowRequestProvider } from './src/context/followRequest';
 import { CacheDatabase } from './src/core/infra/db/CacheDatabase';
+import { HybridPostRepository } from './src/core/infra/repositories/HybridPostRepository';
 
 
 function App() {
@@ -21,7 +22,9 @@ function App() {
 
   useEffect(() => {
     // Initialize cache database
-    CacheDatabase.init().catch(err => console.error('Failed to init cache:', err));
+    CacheDatabase.init().then(() => {
+      HybridPostRepository.getInstance().syncPendingPosts();
+    }).catch(err => console.error('Failed to init cache:', err));
 
     // testSupabaseConnection()
     const subscription = Linking.addEventListener("url", async ({ url }) => {
@@ -35,7 +38,6 @@ function App() {
     });
 
     checkForUpdates()
-    CacheDatabase.getPosts().then(posts => console.log("Posts cached: ", posts))
 
     return () => subscription.remove();
 
